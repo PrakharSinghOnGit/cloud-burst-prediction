@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
+import { GlobalBackground } from "@/components/GlobalBackground";
 import "./globals.css";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -9,7 +10,7 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Cloud Burst Pridiction",
+  title: "Cloud Burst Prediction",
   description: "Get Secure Predictions",
 };
 
@@ -29,11 +30,12 @@ export default function RootLayout({
       <body className={`${geistSans.className} antialiased`}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <GlobalBackground />
+          <div className="relative z-10">{children}</div>
         </ThemeProvider>
       </body>
     </html>

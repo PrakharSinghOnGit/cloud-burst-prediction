@@ -1,250 +1,175 @@
 "use client";
-import React from "react";
+
+import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { Cloud, Zap, Shield, CloudRainWind, Menu, X } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
-import { ArrowRight, Github, Menu, Pickaxe, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { AnimatedGroup } from "@/components/ui/animated-group";
+import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 
-const transitionVariants = {
-  item: {
-    hidden: {
-      opacity: 0,
-      filter: "blur(12px)",
-      y: 12,
-    },
-    visible: {
-      opacity: 1,
-      filter: "blur(0px)",
-      y: 0,
-      transition: {
-        type: "spring" as const,
-        bounce: 0.3,
-        duration: 1.5,
-      },
-    },
-  },
-};
+export const Hero = () => {
+  const [isMounted, setIsMounted] = useState(false);
 
-export function Hero() {
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Prevent hydration mismatch
+  if (!isMounted) {
+    return null;
+  }
+
   return (
     <>
       <HeroHeader />
-      <main className="overflow-hidden">
-        <AnimatedGroup
-          variants={{
-            item: {
-              hidden: {
-                opacity: 0,
-              },
-              visible: {
-                opacity: 1,
-                transition: {
-                  type: "spring" as const,
-                  bounce: 0.3,
-                  duration: 4,
-                },
-              },
-            },
-          }}
-          className="absolute inset-0 -z-20"
-        >
-          <div
-            aria-hidden
-            className="z-[2] absolute inset-0 pointer-events-none isolate contain-strict"
+      <div className="relative min-h-screen overflow-hidden bg-transparent">
+        {/* Animated Background */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0" />
+
+          {/* Enhanced Rain effect */}
+          <div className="absolute inset-0 opacity-60">
+            {Array.from({ length: 100 }).map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-0.5 bg-gradient-to-b from-transparent to-blue-200"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `-10%`,
+                  height: `${Math.random() * 20 + 10}px`,
+                }}
+                animate={{
+                  y: ["0vh", "110vh"],
+                  x: [0, Math.random() * 20 - 10],
+                }}
+                transition={{
+                  duration: Math.random() * 1.5 + 2,
+                  repeat: Infinity,
+                  ease: "linear",
+                  delay: Math.random() * 2,
+                }}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Technology Icons */}
+        <div className="absolute bottom-8 left-8 flex gap-4">
+          <motion.div
+            className="p-3 bg-blue-500/20 backdrop-blur-sm rounded-full border border-blue-400/30"
+            whileHover={{ scale: 1.1 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.2 }}
           >
-            <div className="w-[35rem] h-[80rem] -translate-y-[350px] absolute left-0 top-0 -rotate-45 rounded-full bg-[radial-gradient(68.54%_68.72%_at_55.02%_31.46%,hsla(217,77%,85%,.18)_0,hsla(217,77%,55%,.09)_50%,hsla(217,77%,45%,0)_80%)] dark:bg-[radial-gradient(68.54%_68.72%_at_55.02%_31.46%,hsla(0,0%,85%,.18)_0,hsla(0,0%,55%,.12)_50%,hsla(0,0%,45%,0)_80%)]" />
-            <div className="h-[80rem] absolute left-0 top-0 w-56 -rotate-45 rounded-full bg-[radial-gradient(50%_50%_at_50%_50%,hsla(217,77%,85%,1)_0,hsla(217,77%,45%,.04)_80%,transparent_100%)] dark:bg-[radial-gradient(50%_50%_at_50%_50%,hsla(0,0%,85%,.06)_0,hsla(0,0%,45%,.02)_80%,transparent_100%)] [translate:5%_-50%]" />
-            <div className="h-[80rem] -translate-y-[350px] absolute left-0 top-0 w-56 -rotate-45 bg-[radial-gradient(50%_50%_at_50%_50%,hsla(217,77%,85%,1)_0,hsla(217,77%,45%,0.06)_80%,transparent_100%)] dark:bg-[radial-gradient(50%_50%_at_50%_50%,hsla(0,0%,85%,.04)_0,hsla(0,0%,45%,.02)_80%,transparent_100%)]" />
-          </div>
-        </AnimatedGroup>
-        <section>
-          <div className="relative pt-24 md:pt-36">
-            <AnimatedGroup
-              variants={{
-                container: {
-                  visible: {
-                    transition: {
-                      delayChildren: 1,
-                    },
-                  },
-                },
-                item: {
-                  hidden: {
-                    opacity: 0,
-                    y: 20,
-                  },
-                  visible: {
-                    opacity: 1,
-                    y: 0,
-                    transition: {
-                      type: "spring" as const,
-                      bounce: 0.3,
-                      duration: 2,
-                    },
-                  },
-                },
-              }}
-              className="absolute inset-0 -z-20"
+            <Cloud className="w-6 h-6 text-blue-400" />
+          </motion.div>
+          <motion.div
+            className="p-3 bg-yellow-500/20 backdrop-blur-sm rounded-full border border-yellow-400/30"
+            whileHover={{ scale: 1.1 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.4 }}
+          >
+            <Zap className="w-6 h-6 text-yellow-400" />
+          </motion.div>
+          <motion.div
+            className="p-3 bg-teal-500/20 backdrop-blur-sm rounded-full border border-teal-400/30"
+            whileHover={{ scale: 1.1 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.6 }}
+          >
+            <Shield className="w-6 h-6 text-teal-400" />
+          </motion.div>
+        </div>
+
+        {/* Main Content */}
+        <div className="relative z-10 flex items-center justify-center min-h-screen px-6">
+          <div className="text-center max-w-4xl mx-auto">
+            <motion.h1
+              className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
             >
-              <div />
-            </AnimatedGroup>
-            <div
-              aria-hidden
-              className="absolute inset-0 -z-10 size-full [background:radial-gradient(125%_125%_at_50%_100%,transparent_0%,var(--background)_75%)]"
+              Predicting{" "}
+              <span className="bg-gradient-to-r from-blue-400 via-teal-400 to-yellow-400 bg-clip-text text-transparent">
+                Cloudbursts
+              </span>
+              .<br />
+              Saving Lives.
+            </motion.h1>
+
+            <motion.p
+              className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              IoT-powered sensors and cutting-edge AI deliver early warnings for
+              extreme weather events.
+            </motion.p>
+
+            <motion.div
+              className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
+              <button className="px-8 py-4 bg-gradient-to-r from-blue-500 to-teal-500 text-white font-semibold rounded-full hover:from-blue-600 hover:to-teal-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                Get Early Access
+              </button>
+              <button className="px-8 py-4 bg-transparent border-2 border-white/30 text-white font-semibold rounded-full hover:bg-white/10 transition-all duration-300 backdrop-blur-sm">
+                Learn More
+              </button>
+            </motion.div>
+
+            <motion.div
+              className="mt-12 flex justify-center items-center gap-8 text-sm text-gray-400"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+            >
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                <span>Real-time Monitoring</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
+                <span>AI Prediction</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" />
+                <span>Community Protection</span>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+
+        {/* Scroll Indicator */}
+        <motion.div
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 2 }}
+        >
+          <motion.div
+            className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center"
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            <motion.div
+              className="w-1 h-3 bg-white/50 rounded-full mt-2"
+              animate={{ y: [0, 6, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
             />
-            <div className="mx-auto max-w-7xl px-6">
-              <div className="text-center sm:mx-auto lg:mr-auto lg:mt-0">
-                <AnimatedGroup variants={transitionVariants}>
-                  {/* TODO THIS LINK NOT WORKING */}
-                  <Link
-                    href="/help"
-                    className="hover:bg-background dark:hover:border-t-border bg-muted group mx-auto flex w-fit items-center gap-4 rounded-full border p-1 pl-4 shadow-md shadow-black/5 transition-all duration-300 dark:border-t-white/5 dark:shadow-zinc-950"
-                  >
-                    <span className="text-foreground text-sm">
-                      Progressive Web App Support
-                    </span>
-                    <span className="dark:border-background block h-4 w-0.5 border-l bg-white dark:bg-zinc-700"></span>
-
-                    <div className="bg-background group-hover:bg-muted size-6 overflow-hidden rounded-full duration-500">
-                      <div className="flex w-12 -translate-x-1/2 duration-500 ease-in-out group-hover:translate-x-0">
-                        <span className="flex size-6">
-                          <ArrowRight className="m-auto size-3" />
-                        </span>
-                        <span className="flex size-6">
-                          <ArrowRight className="m-auto size-3" />
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-
-                  <h1 className="mt-8 max-w-4xl mx-auto font-bold text-balance text-6xl md:text-7xl lg:mt-16 xl:text-[5.25rem]">
-                    Automate Your Business Team Data
-                  </h1>
-                  <p className="mx-auto mt-8 max-w-2xl text-balance text-lg">
-                    AWPL Helper gives you a clean dashboard to fetch and monitor
-                    your team&apos;s performance automatically
-                  </p>
-                </AnimatedGroup>
-                <AnimatedGroup
-                  variants={{
-                    container: {
-                      visible: {
-                        transition: {
-                          delayChildren: 1,
-                        },
-                      },
-                    },
-                    item: {
-                      hidden: {
-                        opacity: 0,
-                      },
-                      visible: {
-                        opacity: 1,
-                        transition: {
-                          type: "spring" as const,
-                          bounce: 0.3,
-                          duration: 2,
-                        },
-                      },
-                    },
-                  }}
-                >
-                  <div className="absolute inset-0 z-0 pointer-events-none gradient dark:gradDark" />
-                </AnimatedGroup>
-
-                <AnimatedGroup
-                  variants={{
-                    container: {
-                      visible: {
-                        transition: {
-                          staggerChildren: 0.05,
-                          delayChildren: 0.75,
-                        },
-                      },
-                    },
-                    item: transitionVariants.item,
-                  }}
-                  className="mt-12 flex flex-col items-center justify-center gap-2 md:flex-row"
-                >
-                  <div
-                    key={1}
-                    className="bg-foreground/10 rounded-[14px] border p-0.5"
-                  >
-                    <Button
-                      asChild
-                      size="lg"
-                      className="rounded-xl px-5 text-base"
-                    >
-                      <Link href="/protected">
-                        <span className="flex gap-2 items-center text-nowrap">
-                          Get Started
-                          <Pickaxe className="size-4" />
-                        </span>
-                      </Link>
-                    </Button>
-                  </div>
-                  <Button
-                    key={2}
-                    asChild
-                    size="lg"
-                    variant="outline"
-                    className=" rounded-xl px-5"
-                  >
-                    <Link href="https://github.com/PrakharSinghOnGit/awplHelper">
-                      <span className="flex gap-2 items-center text-nowrap">
-                        <Github />
-                        GitHub
-                      </span>
-                    </Link>
-                  </Button>
-                </AnimatedGroup>
-              </div>
-            </div>
-
-            <AnimatedGroup
-              variants={{
-                container: {
-                  visible: {
-                    transition: {
-                      staggerChildren: 0.05,
-                      delayChildren: 0.75,
-                    },
-                  },
-                },
-                item: transitionVariants.item,
-              }}
-            >
-              <div className="relative -mr-56 mt-8 overflow-hidden px-2 sm:mr-0 sm:mt-12 md:mt-20">
-                <div
-                  aria-hidden
-                  className="bg-gradient-to-b to-background absolute inset-0 z-10 from-transparent from-35%"
-                />
-                <div className="inset-shadow-2xs ring-background dark:inset-shadow-white/20 bg-background relative mx-auto max-w-6xl overflow-hidden rounded-2xl border p-4 shadow-lg shadow-zinc-950/15 ring-1">
-                  <Image
-                    className="bg-background aspect-[15/8] relative hidden rounded-2xl dark:block"
-                    src="/dashboard.webp"
-                    alt="app screen"
-                    width={2700}
-                    height={1440}
-                  />
-                  <Image
-                    className="z-2 border-border/25 aspect-[15/8] relative rounded-2xl border dark:hidden"
-                    src="/dashlight.webp"
-                    alt="app screen"
-                    width={2700}
-                    height={1440}
-                  />
-                </div>
-              </div>
-            </AnimatedGroup>
-          </div>
-        </section>
-      </main>
+          </motion.div>
+        </motion.div>
+      </div>
     </>
   );
-}
+};
 
 const menuItems = [
   { name: "Features", href: "#feature" },
@@ -284,8 +209,10 @@ const HeroHeader = () => {
                 aria-label="home"
                 className="flex items-center space-x-2"
               >
-                <Image src={"/pickaxe.png"} alt="LOGO" width={32} height={32} />
-                <span className="text-2xl font-bold logoFace">AWPL Helper</span>
+                <CloudRainWind className="w-8 h-8 text-blue-500" />
+                <span className="text-2xl font-bold logoFace">
+                  Could Burst Prediction
+                </span>
               </Link>
 
               <button

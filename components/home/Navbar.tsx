@@ -3,7 +3,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { LogIn, Menu, PickaxeIcon } from "lucide-react";
+import { CloudAlert, LogIn, Menu, PickaxeIcon } from "lucide-react";
 
 const Navbar = () => {
   const navLinks = [
@@ -20,11 +20,12 @@ const Navbar = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center justify-center m-1 gap-3">
           <PickaxeIcon size={30} />
+          <CloudAlert size={30} className="text-blue-500" />
           <div
             className="text-2xl font-bold text-nowrap"
             style={{ fontFamily: "Bytesized" }}
           >
-            AWPL HELPER
+            AWPL
           </div>
         </div>
 
