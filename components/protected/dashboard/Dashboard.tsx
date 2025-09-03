@@ -1,5 +1,6 @@
 import { useProfile } from "@/hooks/useDatabase";
 import DashboardSkeleton from "@/components/protected/dashboard/DashboardSkeleton";
+import { calcLevel } from "@/utils/awpl.helper";
 import UserLevel from "./userLevel";
 
 export default function Dashboard() {
