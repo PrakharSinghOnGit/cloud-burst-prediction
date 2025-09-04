@@ -25,7 +25,7 @@ const Navbar = () => {
             className="text-2xl font-bold text-nowrap"
             style={{ fontFamily: "Bytesized" }}
           >
-            AWPL
+            Burst Prediction
           </div>
         </div>
 
@@ -89,7 +89,7 @@ const Navbar = () => {
             <Button variant={"ghost"} className="justify-start w-full">
               <span className="flex items-center gap-2">
                 Sign Up
-                <LogIn animateOnHover={true} />
+                <LogIn />
               </span>
             </Button>
           </div>

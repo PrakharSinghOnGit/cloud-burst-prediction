@@ -1,13 +1,11 @@
 "use client";
 
 import {
-  Activity,
-  CreditCard,
-  Gauge,
+  AlertCircle,
+  Cloud,
+  FileQuestion,
   HelpCircle,
-  IndianRupee,
   LayoutDashboard,
-  Users,
 } from "lucide-react";
 import {
   Sidebar,
@@ -20,9 +18,10 @@ import {
   SidebarFooter,
   useSidebar,
 } from "@/components/ui/sidebar";
-import Image from "next/image";
 import { useNavigation } from "@/components/providers/NavigationContext";
-import { SidebarLogoutButton } from "../auth/logoutbutton";
+import { LogOut } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 const Links = [
   {
@@ -30,20 +29,20 @@ const Links = [
     icon: LayoutDashboard,
   },
   {
-    name: "Team",
-    icon: Users,
+    name: "Alerts",
+    icon: AlertCircle,
   },
   {
-    name: "Level Data",
-    icon: Activity,
+    name: "idk what to add",
+    icon: FileQuestion,
   },
   {
-    name: "Target Data",
-    icon: Gauge,
+    name: "idk what to add 2",
+    icon: FileQuestion,
   },
   {
-    name: "Cheque Data",
-    icon: IndianRupee,
+    name: "idk what to add final",
+    icon: FileQuestion,
   },
 ];
 
@@ -52,24 +51,29 @@ const FooterLinks = [
     name: "Help",
     icon: HelpCircle,
   },
-  {
-    name: "Billing",
-    icon: CreditCard,
-  },
 ];
 
 export function AppSidebar() {
+  const router = useRouter();
+
+  const logout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/auth/login");
+  };
   const { currentPage, setCurrentPage } = useNavigation();
   const { isMobile: isSidebarMobile, state } = useSidebar();
   return (
     <Sidebar collapsible={isSidebarMobile ? "offcanvas" : "icon"}>
       <SidebarContent>
-        <SidebarHeader className="text-2xl font-bold flex flex-row items-center gap-2 m-4 !p-0 overflow-hidden">
-          <Image src={"/pickaxe.png"} alt="LOGO" width={32} height={32} />
+        <SidebarHeader className="text-lg font-bold flex flex-row items-center gap-2 m-4 !p-0 overflow-hidden">
+          <div className="w-8 h-8 flex justify-center items-center">
+            <Cloud />
+          </div>
           <p
             className={`text-nowrap logoFace ${state == "collapsed" ? "" : ""}`}
           >
-            Awpl Helper.
+            Burst Prediction
           </p>
         </SidebarHeader>
 
@@ -113,7 +117,15 @@ export function AppSidebar() {
           ))}
           <SidebarSeparator />
           <SidebarMenuItem className="flex mx-3 mb-3">
-            <SidebarLogoutButton />
+            <SidebarMenuButton
+              variant="outline"
+              className={`hover:scale-105 transition-all text-nowrap p-2.5 size-10 w-full bg-gray-50 hover:bg-gray-100 dark:bg-white/5 dark:hover:bg-white/10`}
+              onClick={logout}
+              tooltip={"Log Out"}
+            >
+              <LogOut className="h-5 w-5" />
+              <div className="pl-[2px]">Log Out</div>
+            </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarFooter>
       </SidebarContent>

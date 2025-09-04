@@ -1,12 +1,11 @@
 "use client";
 
 import { createContext, useContext, useState, ReactNode } from "react";
-import Dashboard from "@/components/protected/dashboard/Dashboard";
-import EditTeam from "@/components/protected/EditTeam";
-import LevelData from "@/components/protected/LevelData";
-import TargetData from "@/components/protected/TargetData";
-import ChequeData from "@/components/protected/ChequeData";
-import Payment from "@/components/protected/Payment";
+import Dashboard from "@/components/protected/Dashboard";
+import Alerts from "@/components/protected/Alerts";
+import Page1 from "@/components/protected/Page1";
+import Page2 from "@/components/protected/Page2";
+import Page3 from "@/components/protected/Page3";
 import Help from "@/components/protected/Help";
 
 type NavigationContextType = {
@@ -26,11 +25,10 @@ type pageProp = {
 
 const pages: pageProp[] = [
   { name: "Dashboard", component: <Dashboard /> },
-  { name: "Team", component: <EditTeam /> },
-  { name: "Level Data", component: <LevelData /> },
-  { name: "Target Data", component: <TargetData /> },
-  { name: "Cheque Data", component: <ChequeData /> },
-  { name: "Billing", component: <Payment /> },
+  { name: "Alerts", component: <Alerts /> },
+  { name: "idk what to add", component: <Page1 /> },
+  { name: "idk what to add 2", component: <Page2 /> },
+  { name: "idk what to add final", component: <Page3 /> },
   { name: "Help", component: <Help /> },
 ];
 
