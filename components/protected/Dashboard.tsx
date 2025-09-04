@@ -5,7 +5,8 @@ export default function Dashboard() {
   const { data: profile, isLoading, error } = useProfile();
 
   if (isLoading) return <DashboardSkeleton />;
-  if (!profile) return <div>You don&apos;t have a profile yet.</div>;
+  if (profile?.length == 0 || !profile)
+    return <div>You don&apos;t have a profile yet.</div>;
   if (error) return <div>Error loading profile: {error.message}</div>;
   return (
     <div>
