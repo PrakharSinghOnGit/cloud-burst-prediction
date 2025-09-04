@@ -22,7 +22,7 @@
 
    ```bash
    git clone https://github.com/PrakharSinghOnGit/cloud-burst-prediction.git
-   cd cloud-burst-pridiction
+   cd cloud-burst-prediction
    ```
 
 2. **Install dependencies**
