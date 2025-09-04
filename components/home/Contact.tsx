@@ -12,12 +12,12 @@ const contactInfo = [
   {
     icon: <MailIcon />,
     label: "Email",
-    value: "awplhelper@gmail.com",
+    value: "Ohyeahhh@gmail.com",
   },
   {
     icon: <PhoneIcon />,
     label: "Phone",
-    value: "+91 7668710673",
+    value: "+91 9998887776",
   },
   {
     icon: <MapPinIcon />,

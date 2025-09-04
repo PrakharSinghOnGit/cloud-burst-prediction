@@ -2,10 +2,9 @@
 
 import { createClient } from "@/lib/supabase/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { createContext, useContext, useState, useEffect } from "react";
 import type { SupabaseClient, User } from "@supabase/supabase-js";
-import type { Database } from "@/utils/database.types";
+import type { Database } from "@/util/database.types";
 
 type TypedSupabaseClient = SupabaseClient<Database>;
 
@@ -51,7 +50,6 @@ export const SupabaseProvider = ({
     <QueryClientProvider client={queryClient}>
       <SupabaseContext.Provider value={supabase}>
         {children}
-        <ReactQueryDevtools initialIsOpen={false} />
       </SupabaseContext.Provider>
     </QueryClientProvider>
   );

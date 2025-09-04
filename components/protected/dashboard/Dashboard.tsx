@@ -1,7 +1,5 @@
 import { useProfile } from "@/hooks/useDatabase";
-import DashboardSkeleton from "@/components/protected/dashboard/DashboardSkeleton";
-import { calcLevel } from "@/utils/awpl.helper";
-import UserLevel from "./userLevel";
+import DashboardSkeleton from "./DashboardSkeleton";
 
 export default function Dashboard() {
   const { data: profile, isLoading, error } = useProfile();
@@ -11,27 +9,11 @@ export default function Dashboard() {
   if (error) return <div>Error loading profile: {error.message}</div>;
   return (
     <div>
-      <h2 className="font-bold text-2xl p-5">Welcome, {profile[0].name}</h2>
+      <h2 className="font-bold text-2xl p-5">
+        Welcome, {JSON.stringify(profile)}
+      </h2>
       <div className="grid gap-3 grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        <UserLevel level={"Fresher"} />
-        <UserLevel level={"Bronze"} />
-        <UserLevel level={"Silver"} />
-        <UserLevel level={"Gold"} />
-        <UserLevel level={"Platinum"} />
-        <UserLevel level={"Emerald"} />
-        <UserLevel level={"Topaz"} />
-        <UserLevel level={"Ruby Star"} />
-        <UserLevel level={"Sapphire"} />
-        <UserLevel level={"Star Sapphire"} />
-        <UserLevel level={"Diamond"} />
-        <UserLevel level={"Blue Diamond"} />
-        <UserLevel level={"Black Diamond"} />
-        <UserLevel level={"Royal Diamond"} />
-        <UserLevel level={"Crown Diamond"} />
-        <UserLevel level={"Ambassador"} />
-        <UserLevel level={"Royal Ambassador"} />
-        <UserLevel level={"Crown Ambassador"} />
-        <UserLevel level={"Brand Ambassador"} />
+        Hi this is dashboard
       </div>
     </div>
   );

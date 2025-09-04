@@ -1,510 +1,532 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence, useInView } from "framer-motion";
-import { Satellite, Brain, CheckCircle, Bell, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Satellite, Brain, CheckCircle, Bell, TrendingUp } from "lucide-react";
+import { motion } from "framer-motion";
+import * as React from "react";
+import { createContext, useContext } from "react";
+import { LoaderCircle } from "lucide-react";
 
-interface Step {
-  id: number;
+// Stepper Types
+type StepperContextValue = {
+  activeStep: number;
+  setActiveStep: (step: number) => void;
+  orientation: "horizontal" | "vertical";
+};
+
+type StepItemContextValue = {
+  step: number;
+  state: StepState;
+  isDisabled: boolean;
+  isLoading: boolean;
+};
+
+type StepState = "active" | "completed" | "inactive" | "loading";
+
+// Stepper Contexts
+const StepperContext = createContext<StepperContextValue | undefined>(
+  undefined
+);
+const StepItemContext = createContext<StepItemContextValue | undefined>(
+  undefined
+);
+
+const useStepper = () => {
+  const context = useContext(StepperContext);
+  if (!context) {
+    throw new Error("useStepper must be used within a Stepper");
+  }
+  return context;
+};
+
+const useStepItem = () => {
+  const context = useContext(StepItemContext);
+  if (!context) {
+    throw new Error("useStepItem must be used within a StepperItem");
+  }
+  return context;
+};
+
+// Stepper Components
+interface StepperProps extends React.HTMLAttributes<HTMLDivElement> {
+  defaultValue?: number;
+  value?: number;
+  onValueChange?: (value: number) => void;
+  orientation?: "horizontal" | "vertical";
+}
+
+const Stepper = React.forwardRef<HTMLDivElement, StepperProps>(
+  (
+    {
+      defaultValue = 0,
+      value,
+      onValueChange,
+      orientation = "horizontal",
+      className,
+      ...props
+    },
+    ref
+  ) => {
+    const [activeStep, setInternalStep] = React.useState(defaultValue);
+
+    const setActiveStep = React.useCallback(
+      (step: number) => {
+        if (value === undefined) {
+          setInternalStep(step);
+        }
+        onValueChange?.(step);
+      },
+      [value, onValueChange]
+    );
+
+    const currentStep = value ?? activeStep;
+
+    return (
+      <StepperContext.Provider
+        value={{
+          activeStep: currentStep,
+          setActiveStep,
+          orientation,
+        }}
+      >
+        <div
+          ref={ref}
+          className={cn(
+            "group/stepper inline-flex data-[orientation=horizontal]:w-full data-[orientation=horizontal]:flex-row data-[orientation=vertical]:flex-col",
+            className
+          )}
+          data-orientation={orientation}
+          {...props}
+        />
+      </StepperContext.Provider>
+    );
+  }
+);
+Stepper.displayName = "Stepper";
+
+interface StepperItemProps extends React.HTMLAttributes<HTMLDivElement> {
+  step: number;
+  completed?: boolean;
+  disabled?: boolean;
+  loading?: boolean;
+}
+
+const StepperItem = React.forwardRef<HTMLDivElement, StepperItemProps>(
+  (
+    {
+      step,
+      completed = false,
+      disabled = false,
+      loading = false,
+      className,
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    const { activeStep } = useStepper();
+
+    const state: StepState =
+      completed || step < activeStep
+        ? "completed"
+        : activeStep === step
+        ? "active"
+        : "inactive";
+
+    const isLoading = loading && step === activeStep;
+
+    return (
+      <StepItemContext.Provider
+        value={{ step, state, isDisabled: disabled, isLoading }}
+      >
+        <div
+          ref={ref}
+          className={cn(
+            "group/step flex items-center group-data-[orientation=horizontal]/stepper:flex-row group-data-[orientation=vertical]/stepper:flex-col",
+            className
+          )}
+          data-state={state}
+          {...(isLoading ? { "data-loading": true } : {})}
+          {...props}
+        >
+          {children}
+        </div>
+      </StepItemContext.Provider>
+    );
+  }
+);
+StepperItem.displayName = "StepperItem";
+
+interface StepperTriggerProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  asChild?: boolean;
+}
+
+const StepperTrigger = React.forwardRef<HTMLButtonElement, StepperTriggerProps>(
+  ({ asChild = false, className, children, ...props }, ref) => {
+    const { setActiveStep } = useStepper();
+    const { step, isDisabled } = useStepItem();
+
+    if (asChild) {
+      return <div className={className}>{children}</div>;
+    }
+
+    return (
+      <button
+        ref={ref}
+        className={cn(
+          "inline-flex items-center gap-3 disabled:pointer-events-none disabled:opacity-50",
+          className
+        )}
+        onClick={() => setActiveStep(step)}
+        disabled={isDisabled}
+        {...props}
+      >
+        {children}
+      </button>
+    );
+  }
+);
+StepperTrigger.displayName = "StepperTrigger";
+
+interface StepperIndicatorProps extends React.HTMLAttributes<HTMLDivElement> {
+  asChild?: boolean;
+}
+
+const StepperIndicator = React.forwardRef<
+  HTMLDivElement,
+  StepperIndicatorProps
+>(({ asChild = false, className, children, ...props }, ref) => {
+  const { state, step, isLoading } = useStepItem();
+
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        "relative flex size-6 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground data-[state=active]:bg-primary data-[state=completed]:bg-primary data-[state=active]:text-primary-foreground data-[state=completed]:text-primary-foreground",
+        className
+      )}
+      data-state={state}
+      {...props}
+    >
+      {asChild ? (
+        children
+      ) : (
+        <>
+          <span className="transition-all group-data-[loading=true]/step:scale-0 group-data-[state=completed]/step:scale-0 group-data-[loading=true]/step:opacity-0 group-data-[state=completed]/step:opacity-0 group-data-[loading=true]/step:transition-none">
+            {step}
+          </span>
+          <CheckCircle
+            className="absolute scale-0 opacity-0 transition-all group-data-[state=completed]/step:scale-100 group-data-[state=completed]/step:opacity-100 w-4 h-4"
+            aria-hidden="true"
+          />
+          {isLoading && (
+            <span className="absolute transition-all">
+              <LoaderCircle
+                className="animate-spin"
+                size={14}
+                strokeWidth={2}
+                aria-hidden="true"
+              />
+            </span>
+          )}
+        </>
+      )}
+    </div>
+  );
+});
+StepperIndicator.displayName = "StepperIndicator";
+
+const StepperTitle = React.forwardRef<
+  HTMLHeadingElement,
+  React.HTMLAttributes<HTMLHeadingElement>
+>(({ className, ...props }, ref) => (
+  <h3 ref={ref} className={cn("text-sm font-medium", className)} {...props} />
+));
+StepperTitle.displayName = "StepperTitle";
+
+const StepperDescription = React.forwardRef<
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLParagraphElement>
+>(({ className, ...props }, ref) => (
+  <p
+    ref={ref}
+    className={cn("text-sm text-muted-foreground", className)}
+    {...props}
+  />
+));
+StepperDescription.displayName = "StepperDescription";
+
+const StepperSeparator = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => {
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        "m-0.5 bg-muted group-data-[orientation=horizontal]/stepper:h-0.5 group-data-[orientation=vertical]/stepper:h-12 group-data-[orientation=horizontal]/stepper:w-full group-data-[orientation=vertical]/stepper:w-0.5 group-data-[orientation=horizontal]/stepper:flex-1 group-data-[state=completed]/step:bg-primary",
+        className
+      )}
+      {...props}
+    />
+  );
+});
+StepperSeparator.displayName = "StepperSeparator";
+
+// Main Component
+type CloudBurstHowItWorksProps = React.HTMLAttributes<HTMLElement>;
+
+interface ProcessStepProps {
+  icon: React.ReactNode;
   title: string;
   description: string;
-  icon: React.ReactNode;
-  details: string[];
-  color: string;
+  features: string[];
+  stepNumber: number;
+  isActive?: boolean;
 }
 
-interface CloudBurstHowItWorksProps {
-  className?: string;
-  autoPlayInterval?: number;
-}
+const ProcessStep: React.FC<ProcessStepProps> = ({
+  icon,
+  title,
+  description,
+  features,
+  stepNumber,
+  isActive = false,
+}) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.6, delay: stepNumber * 0.1 }}
+    viewport={{ once: true }}
+    className={cn(
+      "relative rounded-2xl border bg-card p-8 text-card-foreground transition-all duration-500 ease-in-out",
+      "hover:scale-105 hover:shadow-xl hover:border-primary/50 hover:bg-muted/50",
+      isActive &&
+        "scale-105 shadow-xl border-primary bg-primary/5 ring-2 ring-primary/30"
+    )}
+  >
+    {isActive && (
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        className="absolute -top-2 -right-2 h-4 w-4 rounded-full bg-primary"
+      >
+        <div className="absolute inset-0 h-4 w-4 rounded-full bg-primary animate-ping" />
+      </motion.div>
+    )}
 
-const FadeInOnScroll = ({
-  children,
-  className = "",
-  delay = 0,
-  direction = "up",
-}: {
-  children: React.ReactNode;
-  className?: string;
-  delay?: number;
-  direction?: "up" | "down" | "left" | "right";
-}) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-
-  const variants = {
-    hidden: {
-      opacity: 0,
-      y: direction === "up" ? 50 : direction === "down" ? -50 : 0,
-      x: direction === "left" ? 50 : direction === "right" ? -50 : 0,
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      x: 0,
-    },
-  };
-
-  return (
-    <motion.div
-      ref={ref}
-      initial="hidden"
-      animate={isInView ? "visible" : "hidden"}
-      variants={variants}
-      transition={{
-        duration: 0.8,
-        delay,
-        ease: [0.25, 0.25, 0.25, 0.75],
-      }}
-      className={className}
+    <div
+      className={cn(
+        "mb-6 flex h-16 w-16 items-center justify-center rounded-xl transition-colors duration-300",
+        isActive
+          ? "bg-primary text-primary-foreground"
+          : "bg-primary/10 text-primary"
+      )}
     >
-      {children}
-    </motion.div>
-  );
-};
+      {icon}
+    </div>
 
-const StaggeredContainer = ({
-  children,
-  className = "",
-  staggerDelay = 0.1,
-}: {
-  children: React.ReactNode;
-  className?: string;
-  staggerDelay?: number;
-}) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-50px" });
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: staggerDelay,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: [0.25, 0.25, 0.25, 0.75] as const,
-      },
-    },
-  };
-
-  return (
-    <motion.div
-      ref={ref}
-      initial="hidden"
-      animate={isInView ? "visible" : "hidden"}
-      variants={containerVariants}
-      className={className}
+    <h3
+      className={cn(
+        "mb-4 text-2xl font-bold transition-colors duration-300",
+        isActive && "text-primary"
+      )}
     >
-      {React.Children.map(children, (child, index) => (
-        <motion.div key={index} variants={itemVariants}>
-          {child}
-        </motion.div>
+      {title}
+    </h3>
+
+    <p className="mb-6 text-lg text-muted-foreground leading-relaxed">
+      {description}
+    </p>
+
+    <ul className="space-y-3">
+      {features.map((feature, index) => (
+        <motion.li
+          key={index}
+          className="flex items-start gap-3"
+          initial={{ opacity: 0.7 }}
+          animate={{ opacity: isActive ? 1 : 0.7 }}
+          transition={{ duration: 0.3, delay: index * 0.1 }}
+        >
+          <div
+            className={cn(
+              "flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full mt-0.5 transition-colors duration-300",
+              isActive ? "bg-primary/30" : "bg-primary/20"
+            )}
+          >
+            <CheckCircle
+              className={cn(
+                "h-3 w-3 transition-colors duration-300",
+                isActive ? "text-primary" : "text-primary"
+              )}
+            />
+          </div>
+          <span className="text-muted-foreground">{feature}</span>
+        </motion.li>
       ))}
-    </motion.div>
-  );
-};
+    </ul>
+  </motion.div>
+);
 
-export function Working({
+export const Working: React.FC<CloudBurstHowItWorksProps> = ({
   className,
-  autoPlayInterval = 4000,
-}: CloudBurstHowItWorksProps) {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [progress, setProgress] = useState(0);
+  ...props
+}) => {
+  const [currentStep, setCurrentStep] = React.useState(1);
 
-  const steps: Step[] = [
+  const processSteps = [
     {
-      id: 1,
+      icon: <Satellite className="h-8 w-8" />,
       title: "Sensors & Satellite Feed",
       description:
-        "Data is continuously gathered from ground stations and satellites.",
-      icon: <Satellite className="h-6 w-6" />,
-      details: [
-        "Real-time weather monitoring from multiple sources",
-        "Satellite imagery analysis for cloud formation",
-        "Ground sensor network integration",
-        "Atmospheric pressure and humidity tracking",
+        "Data is continuously gathered from ground stations and satellites to monitor atmospheric conditions in real-time.",
+      features: [
+        "Real-time weather data collection",
+        "Multi-source satellite integration",
+        "Ground station network monitoring",
+        "Atmospheric pressure tracking",
       ],
-      color: "blue",
     },
     {
-      id: 2,
+      icon: <Brain className="h-8 w-8" />,
       title: "AI Risk Analysis",
       description:
         "Advanced machine learning algorithms analyze incoming weather data to detect critical cloudburst patterns.",
-      icon: <Brain className="h-6 w-6" />,
-      details: [
-        "Pattern recognition in meteorological data",
-        "Deep learning models for weather prediction",
-        "Risk assessment algorithms",
-        "Historical data correlation analysis",
+      features: [
+        "Deep learning pattern recognition",
+        "Historical data correlation",
+        "Predictive modeling algorithms",
+        "Risk assessment scoring",
       ],
-      color: "purple",
     },
     {
-      id: 3,
+      icon: <CheckCircle className="h-8 w-8" />,
       title: "Prediction & Validation",
       description:
-        "The system cross-validates predictions with multiple data sources to minimize false alarms.",
-      icon: <CheckCircle className="h-6 w-6" />,
-      details: [
-        "Multi-source data verification",
-        "Confidence scoring system",
-        "False positive reduction algorithms",
-        "Accuracy validation protocols",
+        "The system cross-validates predictions with multiple data sources to minimize false alarms and ensure accuracy.",
+      features: [
+        "Multi-source data validation",
+        "False alarm reduction",
+        "Confidence level assessment",
+        "Prediction accuracy optimization",
       ],
-      color: "green",
     },
     {
-      id: 4,
+      icon: <Bell className="h-8 w-8" />,
       title: "Instant Alerts",
       description:
-        "Automated notifications are sent to users and authorities within seconds of detection.",
-      icon: <Bell className="h-6 w-6" />,
-      details: [
-        "Real-time notification system",
-        "Multi-channel alert distribution",
+        "Automated notifications are sent to users and authorities within seconds of detection for immediate response.",
+      features: [
+        "Real-time alert system",
+        "Multi-channel notifications",
         "Emergency response integration",
         "Location-based targeting",
       ],
-      color: "orange",
     },
     {
-      id: 5,
+      icon: <TrendingUp className="h-8 w-8" />,
       title: "Continuous Improvement",
       description:
-        "Feedback loops and recent event logs enhance system accuracy over time.",
-      icon: <TrendingUp className="h-6 w-6" />,
-      details: [
-        "Machine learning model refinement",
-        "Performance analytics tracking",
-        "Feedback integration system",
-        "Predictive accuracy optimization",
+        "Feedback loops and recent event logs enhance system accuracy over time through machine learning optimization.",
+      features: [
+        "Adaptive learning algorithms",
+        "Performance analytics",
+        "System optimization",
+        "Accuracy enhancement",
       ],
-      color: "indigo",
     },
   ];
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      if (progress < 100) {
-        setProgress((prev) => prev + 100 / (autoPlayInterval / 100));
-      } else {
-        setCurrentStep((prev) => (prev + 1) % steps.length);
-        setProgress(0);
-      }
-    }, 100);
-
-    return () => clearInterval(timer);
-  }, [progress, steps.length, autoPlayInterval]);
-
-  const getColorClasses = (color: string, isActive: boolean): string => {
-    const colorMap: Record<string, string> = {
-      blue: isActive
-        ? "bg-blue-500 border-blue-500 text-white"
-        : "bg-blue-100 border-blue-200 text-blue-600",
-      purple: isActive
-        ? "bg-purple-500 border-purple-500 text-white"
-        : "bg-purple-100 border-purple-200 text-purple-600",
-      green: isActive
-        ? "bg-green-500 border-green-500 text-white"
-        : "bg-green-100 border-green-200 text-green-600",
-      orange: isActive
-        ? "bg-orange-500 border-orange-500 text-white"
-        : "bg-orange-100 border-orange-200 text-orange-600",
-      indigo: isActive
-        ? "bg-indigo-500 border-indigo-500 text-white"
-        : "bg-indigo-100 border-indigo-200 text-indigo-600",
-    };
-    return colorMap[color] || colorMap.blue;
-  };
 
   return (
     <section
       id="working"
-      className={cn("py-20 relative overflow-hidden", className)}
+      className={cn("w-full py-20 sm:py-32", className)}
+      {...props}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <FadeInOnScroll>
-          <div className="text-center mb-16">
-            <motion.h2
-              className="text-4xl lg:text-5xl font-bold text-slate-900 dark:text-slate-100 mb-6"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-            >
-              How Our{" "}
-              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                CloudBurst Detection
-              </span>{" "}
-              Works
-            </motion.h2>
-            <motion.p
-              className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              Our advanced AI-powered system combines real-time data analysis
-              with machine learning to provide accurate cloudburst predictions
-              and instant alerts.
-            </motion.p>
-          </div>
-        </FadeInOnScroll>
+      <div className="container mx-auto px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="mx-auto mb-20 max-w-4xl text-center"
+        >
+          <h2 className="text-5xl font-bold tracking-tight text-foreground sm:text-6xl mb-6">
+            How It Works
+          </h2>
+          <p className="text-xl text-muted-foreground leading-relaxed">
+            Our advanced cloudburst prediction system combines cutting-edge
+            technology with real-time data analysis to provide accurate early
+            warnings
+          </p>
+        </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-12 items-start">
-          {/* Steps List */}
-          <StaggeredContainer className="space-y-6" staggerDelay={0.15}>
-            {steps.map((step, index) => (
-              <motion.div
-                key={step.id}
-                className="flex items-start gap-6 cursor-pointer"
-                onClick={() => setCurrentStep(index)}
-                initial={{ opacity: 0.5 }}
-                animate={{ opacity: index === currentStep ? 1 : 0.6 }}
-                transition={{ duration: 0.5 }}
-                whileHover={{ scale: 1.02 }}
+        <div className="mx-auto mb-16 max-w-6xl">
+          <Stepper
+            value={currentStep}
+            onValueChange={setCurrentStep}
+            className="mb-12"
+          >
+            {processSteps.map((step, index) => (
+              <StepperItem
+                key={index + 1}
+                step={index + 1}
+                className="[&:not(:last-child)]:flex-1"
               >
-                <motion.div
-                  className={cn(
-                    "w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all duration-500",
-                    getColorClasses(step.color, index === currentStep)
-                  )}
-                  animate={
-                    index === currentStep
-                      ? {
-                          scale: [1, 1.1, 1],
-                        }
-                      : {}
-                  }
-                  transition={{
-                    duration: 2,
-                    repeat: index === currentStep ? Infinity : 0,
-                    ease: "easeInOut",
-                  }}
+                <StepperTrigger
+                  className="group flex flex-col items-center gap-2 p-4 rounded-lg hover:bg-muted transition-colors duration-200"
+                  onClick={() => setCurrentStep(index + 1)}
                 >
-                  {index <= currentStep ? (
-                    step.icon
-                  ) : (
-                    <span className="text-lg font-semibold">{index + 1}</span>
-                  )}
-                </motion.div>
-
-                <div className="flex-1">
-                  <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-2">
-                    {step.title}
-                  </h3>
-                  <p className="text-slate-600 dark:text-slate-300 mb-3">
-                    {step.description}
-                  </p>
-
-                  {/* Progress Bar for Current Step */}
-                  {index === currentStep && (
-                    <motion.div
-                      className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1 mb-3"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <motion.div
-                        className={`h-1 rounded-full bg-gradient-to-r from-${step.color}-400 to-${step.color}-600`}
-                        style={{ width: `${progress}%` }}
-                        transition={{ duration: 0.1 }}
-                      />
-                    </motion.div>
-                  )}
-
-                  {/* Step Details */}
-                  <AnimatePresence>
-                    {index === currentStep && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="overflow-hidden"
-                      >
-                        <ul className="space-y-2">
-                          {step.details.map((detail, detailIndex) => (
-                            <motion.li
-                              key={detailIndex}
-                              className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400"
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: detailIndex * 0.1 }}
-                            >
-                              <div
-                                className={`w-1.5 h-1.5 rounded-full bg-${step.color}-400`}
-                              />
-                              {detail}
-                            </motion.li>
-                          ))}
-                        </ul>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </motion.div>
+                  <StepperIndicator className="h-12 w-12 text-base" />
+                  <div className="text-center">
+                    <div className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">
+                      Step {index + 1}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1 max-w-24 line-clamp-2">
+                      {step.title}
+                    </div>
+                  </div>
+                </StepperTrigger>
+                {index < processSteps.length - 1 && <StepperSeparator />}
+              </StepperItem>
             ))}
-          </StaggeredContainer>
-
-          {/* Visual Representation */}
-          <FadeInOnScroll delay={0.3} className="lg:sticky lg:top-8">
-            <div className="relative">
-              {/* Main Visualization Card */}
-              <motion.div
-                className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-8 border border-slate-200 dark:border-slate-700"
-                layout
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                {/* Animated Background */}
-                <motion.div
-                  className="absolute inset-0 rounded-2xl opacity-5"
-                  style={{
-                    background: `linear-gradient(45deg, transparent, rgba(59, 130, 246, 0.1), transparent)`,
-                  }}
-                  animate={{
-                    background: [
-                      "linear-gradient(45deg, transparent, rgba(59, 130, 246, 0.1), transparent)",
-                      "linear-gradient(135deg, transparent, rgba(99, 102, 241, 0.1), transparent)",
-                      "linear-gradient(225deg, transparent, rgba(139, 92, 246, 0.1), transparent)",
-                      "linear-gradient(315deg, transparent, rgba(59, 130, 246, 0.1), transparent)",
-                    ],
-                  }}
-                  transition={{
-                    duration: 8,
-                    repeat: Infinity,
-                    ease: "linear",
-                  }}
-                />
-
-                <div className="relative z-10">
-                  {/* Current Step Header */}
-                  <div className="flex items-center gap-4 mb-6">
-                    <motion.div
-                      className={cn(
-                        "w-16 h-16 rounded-xl flex items-center justify-center",
-                        `bg-${steps[currentStep].color}-100 text-${steps[currentStep].color}-600`
-                      )}
-                      key={currentStep}
-                      initial={{ scale: 0, rotate: -180 }}
-                      animate={{ scale: 1, rotate: 0 }}
-                      transition={{ duration: 0.5, type: "spring" }}
-                    >
-                      {steps[currentStep].icon}
-                    </motion.div>
-                    <div>
-                      <motion.h3
-                        className="text-2xl font-bold text-slate-900 dark:text-slate-100"
-                        key={`title-${currentStep}`}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4 }}
-                      >
-                        {steps[currentStep].title}
-                      </motion.h3>
-                      <motion.p
-                        className="text-slate-600 dark:text-slate-400"
-                        key={`desc-${currentStep}`}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4, delay: 0.1 }}
-                      >
-                        Step {currentStep + 1} of {steps.length}
-                      </motion.p>
-                    </div>
-                  </div>
-
-                  {/* Process Flow Visualization */}
-                  <div className="space-y-4">
-                    <motion.div
-                      className="h-32 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 rounded-xl p-4 flex items-center justify-center"
-                      key={`visual-${currentStep}`}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.5 }}
-                    >
-                      <motion.div
-                        className={`text-6xl opacity-20 text-${steps[currentStep].color}-400`}
-                        animate={{
-                          scale: [1, 1.1, 1],
-                          opacity: [0.2, 0.4, 0.2],
-                        }}
-                        transition={{
-                          duration: 3,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                        }}
-                      >
-                        {steps[currentStep].icon}
-                      </motion.div>
-                    </motion.div>
-
-                    {/* Step Indicators */}
-                    <div className="flex justify-center space-x-2">
-                      {steps.map((_, index) => (
-                        <motion.button
-                          key={index}
-                          onClick={() => setCurrentStep(index)}
-                          className={cn(
-                            "w-3 h-3 rounded-full transition-all duration-300",
-                            index === currentStep
-                              ? `bg-${steps[currentStep].color}-500 scale-125`
-                              : "bg-slate-300 dark:bg-slate-600 hover:bg-slate-400 dark:hover:bg-slate-500"
-                          )}
-                          whileHover={{ scale: 1.2 }}
-                          whileTap={{ scale: 0.9 }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Floating Elements */}
-              <motion.div
-                className="absolute -top-4 -right-4 w-8 h-8 bg-blue-400 rounded-full opacity-60"
-                animate={{
-                  y: [0, -10, 0],
-                  scale: [1, 1.1, 1],
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              />
-              <motion.div
-                className="absolute -bottom-4 -left-4 w-6 h-6 bg-indigo-400 rounded-full opacity-40"
-                animate={{
-                  y: [0, 10, 0],
-                  scale: [1, 0.9, 1],
-                }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: 1,
-                }}
-              />
-            </div>
-          </FadeInOnScroll>
+          </Stepper>
         </div>
+
+        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 lg:grid-cols-2 xl:grid-cols-3">
+          {processSteps.map((step, index) => (
+            <ProcessStep
+              key={index}
+              icon={step.icon}
+              title={step.title}
+              description={step.description}
+              features={step.features}
+              stepNumber={index}
+              isActive={currentStep === index + 1}
+            />
+          ))}
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          viewport={{ once: true }}
+          className="mt-16 text-center"
+        >
+          <div className="mx-auto max-w-3xl rounded-2xl bg-primary/5 p-8 border border-primary/20">
+            <h3 className="text-2xl font-bold text-foreground mb-4">
+              Advanced Prediction Technology
+            </h3>
+            <p className="text-lg text-muted-foreground">
+              Our system processes over 10,000 data points per second from
+              multiple sources, achieving 95% accuracy in cloudburst prediction
+              with lead times of up to 2 hours.
+            </p>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
-}
+};

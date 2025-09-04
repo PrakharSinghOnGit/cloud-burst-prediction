@@ -81,14 +81,22 @@ export function Features() {
             >
               <Card className="overflow-hidden h-full flex items-center justify-center">
                 <CardContent className="pt-6">
-                  <div className="relative mx-auto flex aspect-square size-32 rounded-full border before:absolute before:-inset-2 before:rounded-full before:border dark:border-white/10 dark:before:border-white/5">
-                    <Image
-                      src="/brainAI.svg"
-                      alt="Intelligent Prediction"
-                      width={100}
-                      height={100}
-                      className="absolute inset-0 m-3 object-contain"
-                    />
+                  <div className="relative mx-auto flex justify-center items-center aspect-square size-32 rounded-full border before:absolute before:-inset-2 before:rounded-full before:border dark:border-white/10 dark:before:border-white/5">
+                    <svg
+                      width="100"
+                      height="100"
+                      viewBox="0 0 80 80"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M53.4996 67.5924V67.5924C60.7305 67.5924 66.5924 61.7305 66.5924 54.4996V54.307M53.4996 67.5924V76M53.4996 67.5924H38.2888M38.2888 67.5924V76M38.2888 67.5924H23.399M23.399 67.5924V67.5924C16.1326 67.5924 10.242 61.6376 10.242 54.3712V54.3712M23.399 67.5924V73.1119M23.399 73.1119L24.049 73.6806C24.5308 74.1022 24.5555 74.8435 24.1027 75.2962L24.062 75.3369C23.685 75.714 23.0843 75.7458 22.6695 75.4108V75.4108C22.1745 75.011 22.1498 74.2649 22.6174 73.8333L23.399 73.1119ZM10.242 54.3712H4.72246M10.242 54.3712V39.2246M4.72246 54.3712L3.53697 53.4228C3.10774 53.0794 2.49497 53.0898 2.07761 53.4475V53.4475C1.52357 53.9224 1.54966 54.7876 2.13131 55.2283L2.24396 55.3136C2.74485 55.6931 3.44893 55.6447 3.89328 55.2004L4.72246 54.3712ZM10.242 39.2246H2.28361M10.242 39.2246V24.2064M10.242 24.2064V24.2064C10.242 17.0464 16.1105 11.242 23.2706 11.242V11.242M10.242 24.2064H2.28361M23.2706 11.242L23.4631 5.40156M23.2706 11.242H38.5455M23.4631 5.40156L24.1654 4.67117C24.6639 4.15275 24.6483 3.32855 24.1306 2.82932L24.0835 2.78389C23.6236 2.34035 22.9009 2.32204 22.419 2.74171V2.74171C21.8312 3.2537 21.8605 4.17605 22.4798 4.64959L23.4631 5.40156ZM38.5455 11.242V2.83435M38.5455 11.242H53.6279M53.6279 11.242V11.242C60.7171 11.242 66.5924 16.9889 66.5924 24.0781V24.0781M53.6279 11.242V2.83435M66.5924 24.0781H72.1119M66.5924 24.0781V39.2246M72.1119 24.0781L72.9694 23.3921C73.3918 23.0541 74.0027 23.0958 74.3753 23.488L74.4489 23.5655C74.735 23.8667 74.7793 24.324 74.5563 24.6745V24.6745C74.2754 25.1159 73.6797 25.2278 73.2578 24.9184L72.1119 24.0781ZM66.5924 39.2246H75M66.5924 39.2246V54.307M66.5924 54.307H75M38.5455 21.6392V33.0633M38.5455 21.6392C38.5455 19.572 44.9809 17.5923 45.3416 22.0274C45.4249 23.0523 47.0423 24.3155 48.0658 24.2172C51.9563 23.8436 55.3328 27.7861 54.6142 31.1723C54.4386 31.9997 54.9927 33.1256 55.7569 33.4881C57.9412 34.5239 58.2716 37.2262 56.4556 39.0172C55.8426 39.6218 55.7625 40.885 56.3637 41.5013C59.1467 44.3543 59.0397 49.2301 54.566 51.1617C54.0854 51.3692 53.7917 51.8786 53.827 52.4008C54.0607 55.859 51.2928 59.3817 47.2546 57.6911C46.8092 57.5046 46.285 57.603 45.9354 57.936C42.6912 61.0265 39.2588 57.6257 38.2888 55.8474M38.5455 21.6392C35.5423 17.7654 32.2734 18.8802 31.3612 21.3601C30.9965 22.3515 28.9805 24.1625 27.9245 24.1318C23.9352 24.0157 21.5985 27.856 22.2028 31.3437C22.316 31.9975 21.8902 32.6761 21.2973 32.9738C19.3425 33.9553 19.1228 36.5906 20.1923 38.4515C20.6416 39.2333 20.5236 40.8058 19.9256 41.4807C17.3995 44.3316 18.9568 49.7723 21.773 51.0524C22.4736 51.371 23.1488 52.212 23.1268 52.9813C23.0298 56.3721 26.2279 59.442 28.9046 57.9274C29.4662 57.6096 30.2258 57.6521 30.6744 58.116C32.8744 60.3911 35.4182 59.3958 38.2888 55.8474M38.2888 55.8474L38.5455 51.098M42.3322 45.5143C44.2263 43.7754 46.1355 44.26 47.202 45.5143M46.6964 50.392C48.5185 49.0669 48.3399 46.8525 47.202 45.5143M47.202 45.5143C47.8464 44.7869 49.8413 43.7686 52.6652 45.5143M38.5455 33.0633C40.0859 35.2027 43.8725 37.9539 46.6964 31.8439M38.5455 33.0633V51.098M30.9081 30.7528C32.298 32.3461 31.2822 35.0066 29.9454 36.0156M25.902 35.1813C27.3857 36.3319 28.7513 36.9169 29.9454 36.0156M29.9454 36.0156C31.1966 36.4221 32.9105 37.6073 31.935 39.8664M38.5455 51.098C35.85 46.5412 30.3433 48.4666 30.3946 52.5742"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeMiterlimit="6"
+                        strokeLinecap="round"
+                      />
+                    </svg>
                   </div>
                   <div className="relative z-10 mt-6 space-y-2 text-center">
                     <h2 className="group-hover:text-secondary-950 text-lg font-medium transition dark:text-white">
@@ -186,9 +194,6 @@ export function Features() {
                         </clipPath>
                       </defs>
                     </svg>
-                    <span className="absolute top-[60px] left-[65px] text-sm">
-                      Live Data Feed
-                    </span>
                   </div>
                   <div className="relative z-10 mt-14 space-y-2 text-center">
                     <h2 className="text-lg font-medium transition">
@@ -207,7 +212,7 @@ export function Features() {
               className="relative col-span-full lg:col-span-3"
               variants={cardVariants}
             >
-              <Card className="overflow-hidden">
+              <Card className="overflow-hidden h-full">
                 <CardContent className="grid pt-6 sm:grid-cols-2">
                   <div className="relative z-10 flex flex-col justify-between space-y-12 lg:space-y-6">
                     <div className="relative flex aspect-square size-12 rounded-full border before:absolute before:-inset-2 before:rounded-full before:border dark:border-white/10 dark:before:border-white/5">

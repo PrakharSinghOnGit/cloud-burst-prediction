@@ -23,36 +23,6 @@ export const Hero = () => {
     <>
       <HeroHeader />
       <div className="relative min-h-screen overflow-hidden bg-transparent">
-        {/* Animated Background */}
-        <div className="absolute inset-0">
-          <div className="absolute inset-0" />
-
-          {/* Enhanced Rain effect */}
-          <div className="absolute inset-0 opacity-60">
-            {Array.from({ length: 100 }).map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute w-0.5 bg-gradient-to-b from-transparent to-blue-200"
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `-10%`,
-                  height: `${Math.random() * 20 + 10}px`,
-                }}
-                animate={{
-                  y: ["0vh", "110vh"],
-                  x: [0, Math.random() * 20 - 10],
-                }}
-                transition={{
-                  duration: Math.random() * 1.5 + 2,
-                  repeat: Infinity,
-                  ease: "linear",
-                  delay: Math.random() * 2,
-                }}
-              />
-            ))}
-          </div>
-        </div>
-
         {/* Technology Icons */}
         <div className="absolute bottom-8 left-8 flex gap-4">
           <motion.div
@@ -173,7 +143,7 @@ export const Hero = () => {
 
 const menuItems = [
   { name: "Features", href: "#feature" },
-  { name: "Pricing", href: "#pricing" },
+  { name: "Working", href: "#working" },
   { name: "FAQ", href: "#faq" },
   { name: "Contact", href: "#contact" },
 ];
@@ -211,7 +181,7 @@ const HeroHeader = () => {
               >
                 <CloudRainWind className="w-8 h-8 text-blue-500" />
                 <span className="text-2xl font-bold logoFace">
-                  Could Burst Prediction
+                  Burst Prediction
                 </span>
               </Link>
 

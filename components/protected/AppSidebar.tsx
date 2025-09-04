@@ -21,8 +21,8 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import Image from "next/image";
-import { SidebarLogoutButton } from "@/components/auth/LogOutButton";
 import { useNavigation } from "@/components/providers/NavigationContext";
+import { SidebarLogoutButton } from "../auth/logoutbutton";
 
 const Links = [
   {

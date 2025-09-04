@@ -4,16 +4,20 @@ import { Hero } from "@/components/home/Hero";
 import { Faq } from "@/components/home/FAQ";
 import { Contact } from "@/components/home/Contact";
 import { Working } from "@/components/home/Working";
+import { GlobalBG } from "@/components/home/GlobalBG";
 
 export default function Home() {
   return (
-    <>
-      <Hero />
-      <Features />
-      <Faq />
-      <Working />
-      <Contact />
-      <Footer />
-    </>
+    <div className="relative">
+      <GlobalBG />
+      <div className="relative z-10">
+        <Hero />
+        <Features />
+        <Faq />
+        <Working />
+        <Contact />
+        <Footer />
+      </div>
+    </div>
   );
 }

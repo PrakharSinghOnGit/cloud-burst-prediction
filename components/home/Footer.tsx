@@ -3,8 +3,8 @@ import React from "react";
 import type { ComponentProps, ReactNode } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import {
+  CloudCogIcon,
   FacebookIcon,
-  FrameIcon,
   InstagramIcon,
   LinkedinIcon,
   YoutubeIcon,
@@ -26,7 +26,6 @@ const footerLinks: FooterSection[] = [
     label: "Product",
     links: [
       { title: "Features", href: "#features" },
-      { title: "Pricing", href: "#pricing" },
       { title: "Testimonials", href: "#testimonials" },
       { title: "Integration", href: "/" },
     ],
@@ -67,9 +66,9 @@ export function Footer() {
 
       <div className="grid w-full gap-8 xl:grid-cols-3 xl:gap-8">
         <AnimatedContainer className="space-y-4">
-          <FrameIcon className="size-8" />
+          <CloudCogIcon className="size-8" />
           <p className="text-muted-foreground mt-8 text-sm md:mt-0">
-            © {new Date().getFullYear()} Asme. All rights reserved.
+            © {new Date().getFullYear()} illuminati. All rights reserved.
           </p>
         </AnimatedContainer>
 
