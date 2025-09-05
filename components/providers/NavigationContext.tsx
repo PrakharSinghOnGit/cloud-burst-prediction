@@ -26,7 +26,7 @@ type pageProp = {
 const pages: pageProp[] = [
   { name: "Dashboard", component: <Dashboard /> },
   { name: "Alerts", component: <Alerts /> },
-  { name: "idk what to add", component: <Page1 /> },
+  { name: "Precautions", component: <Page1 /> },
   { name: "idk what to add 2", component: <Page2 /> },
   { name: "idk what to add final", component: <Page3 /> },
   { name: "Help", component: <Help /> },
