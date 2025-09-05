@@ -4,7 +4,6 @@ import {
   AlertCircle,
   Cloud,
   FileQuestion,
-  ShieldAlert,
   HelpCircle,
   LayoutDashboard,
 } from "lucide-react";
@@ -34,8 +33,8 @@ const Links = [
     icon: AlertCircle,
   },
   {
-    name: "Precautions",
-    icon: ShieldAlert,
+    name: "idk what to add",
+    icon: FileQuestion,
   },
   {
     name: "idk what to add 2",
