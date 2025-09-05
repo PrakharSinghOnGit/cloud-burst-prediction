@@ -3,6 +3,8 @@ import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { SupabaseProvider } from "@/components/providers/SupabaseProvider";
+import { GlobalBG } from "@/components/home/GlobalBG";
+import { Footer } from "@/components/home/Footer";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -35,7 +37,11 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <SupabaseProvider>
-            <div className="relative z-10 min-h-screen">{children}</div>
+            <GlobalBG />
+            <div className="relative z-10 min-h-screen flex flex-col">
+              <div className="flex-1">{children}</div>
+              <Footer />
+            </div>
           </SupabaseProvider>
         </ThemeProvider>
       </body>
