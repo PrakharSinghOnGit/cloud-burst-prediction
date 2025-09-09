@@ -37,9 +37,7 @@ export default function CloudburstProbability({
               endAngle={-270}
             >
               <RadialBar
-                minAngle={15}
                 background
-                clockWise
                 dataKey="value"
                 isAnimationActive
                 animationDuration={800}

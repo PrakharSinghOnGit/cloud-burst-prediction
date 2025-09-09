@@ -16,8 +16,9 @@ import { Maximize2 } from "lucide-react";
 const DynamicMap = dynamic(
   async () => {
     const L = await import("leaflet");
-    const { MapContainer, TileLayer, Marker, Popup, Circle, Rectangle } =
-      await import("react-leaflet");
+    const { MapContainer, TileLayer, Marker, Popup, Circle } = await import(
+      "react-leaflet"
+    );
 
     return function InnerMap({
       userLocation,
