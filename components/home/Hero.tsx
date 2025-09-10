@@ -6,6 +6,7 @@ import { Cloud, Zap, Shield, CloudRainWind, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/components/providers/AuthProvider";
 
 export const Hero = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -87,9 +88,7 @@ export const Hero = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              <button className="px-8 py-4 bg-gradient-to-r from-blue-500 to-teal-500 text-white font-semibold rounded-full hover:from-blue-600 hover:to-teal-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
-                Get Early Access
-              </button>
+              <HeroButtons />
               <button className="px-8 py-4 bg-transparent border-2 border-white/30 text-white font-semibold rounded-full hover:bg-white/10 transition-all duration-300 backdrop-blur-sm">
                 Learn More
               </button>
@@ -148,9 +147,43 @@ const menuItems = [
   { name: "Contact", href: "#contact" },
 ];
 
+const HeroButtons = () => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <button
+        disabled
+        className="px-8 py-4 bg-gradient-to-r from-blue-500 to-teal-500 text-white font-semibold rounded-full opacity-50 shadow-lg"
+      >
+        Loading...
+      </button>
+    );
+  }
+
+  if (user) {
+    return (
+      <Link href="/protected">
+        <button className="px-8 py-4 bg-gradient-to-r from-blue-500 to-teal-500 text-white font-semibold rounded-full hover:from-blue-600 hover:to-teal-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
+          Go to Dashboard
+        </button>
+      </Link>
+    );
+  }
+
+  return (
+    <Link href="/auth/signup">
+      <button className="px-8 py-4 bg-gradient-to-r from-blue-500 to-teal-500 text-white font-semibold rounded-full hover:from-blue-600 hover:to-teal-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
+        Get Early Access
+      </button>
+    </Link>
+  );
+};
+
 const HeroHeader = () => {
   const [menuState, setMenuState] = React.useState(false);
   const [isScrolled, setIsScrolled] = React.useState(false);
+  const { user, loading } = useAuth();
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -159,6 +192,7 @@ const HeroHeader = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
   return (
     <header>
       <nav
@@ -226,34 +260,54 @@ const HeroHeader = () => {
                 </ul>
               </div>
               <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
-                <Button
-                  asChild
-                  variant="outline"
-                  size="sm"
-                  className={cn(isScrolled && "lg:hidden")}
-                >
-                  <Link href="/auth/login">
-                    <span>Login</span>
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  size="sm"
-                  className={cn(isScrolled && "lg:hidden")}
-                >
-                  <Link href="/auth/signup">
-                    <span>Sign Up</span>
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  size="sm"
-                  className={cn(isScrolled ? "lg:inline-flex" : "hidden")}
-                >
-                  <Link href="/auth/signup">
-                    <span>Get Started</span>
-                  </Link>
-                </Button>
+                {loading ? (
+                  <Button variant="outline" size="sm" disabled>
+                    <span>Loading...</span>
+                  </Button>
+                ) : user ? (
+                  <>
+                    <Button
+                      asChild
+                      size="sm"
+                      className="bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600"
+                    >
+                      <Link href="/protected">
+                        <span>Dashboard</span>
+                      </Link>
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="sm"
+                      className={cn(isScrolled && "lg:hidden")}
+                    >
+                      <Link href="/auth/login">
+                        <span>Login</span>
+                      </Link>
+                    </Button>
+                    <Button
+                      asChild
+                      size="sm"
+                      className={cn(isScrolled && "lg:hidden")}
+                    >
+                      <Link href="/auth/signup">
+                        <span>Sign Up</span>
+                      </Link>
+                    </Button>
+                    <Button
+                      asChild
+                      size="sm"
+                      className={cn(isScrolled ? "lg:inline-flex" : "hidden")}
+                    >
+                      <Link href="/auth/signup">
+                        <span>Get Started</span>
+                      </Link>
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </div>

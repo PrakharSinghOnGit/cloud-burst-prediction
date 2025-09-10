@@ -3,7 +3,7 @@
 import {
   AlertCircle,
   Cloud,
-  FileQuestion,
+  // FileQuestion,
   ShieldAlert,
   HelpCircle,
   LayoutDashboard,
@@ -23,6 +23,7 @@ import { useNavigation } from "@/components/providers/NavigationContext";
 import { LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const Links = [
   {
@@ -37,14 +38,14 @@ const Links = [
     name: "Precautions",
     icon: ShieldAlert,
   },
-  {
-    name: "idk what to add 2",
-    icon: FileQuestion,
-  },
-  {
-    name: "idk what to add final",
-    icon: FileQuestion,
-  },
+  // {
+  //   name: "idk what to add 2",
+  //   icon: FileQuestion,
+  // },
+  // {
+  //   name: "idk what to add final",
+  //   icon: FileQuestion,
+  // },
 ];
 
 const FooterLinks = [
@@ -67,16 +68,20 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible={isSidebarMobile ? "offcanvas" : "icon"}>
       <SidebarContent>
-        <SidebarHeader className="text-lg font-bold flex flex-row items-center gap-2 m-4 !p-0 overflow-hidden">
-          <div className="w-8 h-8 flex justify-center items-center">
-            <Cloud />
-          </div>
-          <p
-            className={`text-nowrap logoFace ${state == "collapsed" ? "" : ""}`}
-          >
-            Burst Prediction
-          </p>
-        </SidebarHeader>
+        <Link href={"/"}>
+          <SidebarHeader className="text-lg font-bold flex flex-row items-center gap-2 m-4 !p-0 overflow-hidden">
+            <div className="w-8 h-8 flex justify-center items-center">
+              <Cloud />
+            </div>
+            <p
+              className={`text-nowrap logoFace ${
+                state == "collapsed" ? "" : ""
+              }`}
+            >
+              Burst Prediction
+            </p>
+          </SidebarHeader>
+        </Link>
 
         <SidebarMenu className="gap-3">
           {Links.map((link) => (

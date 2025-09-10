@@ -13,6 +13,25 @@ export async function updateSession(request: NextRequest) {
     return supabaseResponse;
   }
 
+  // Skip auth checks for public routes and static assets
+  const publicPaths = [
+    "/",
+    "/auth",
+    "/api",
+    "/_next",
+    "/favicon.ico",
+    "/robots.txt",
+    "/sitemap.xml",
+  ];
+
+  const isPublicPath = publicPaths.some((path) =>
+    request.nextUrl.pathname.startsWith(path)
+  );
+
+  if (isPublicPath && !request.nextUrl.pathname.startsWith("/protected")) {
+    return supabaseResponse;
+  }
+
   // With Fluid compute, don't put this client in a global environment
   // variable. Always create a new one on each request.
   const supabase = createServerClient(
@@ -38,25 +57,24 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // Do not run code between createServerClient and
-  // supabase.auth.getClaims(). A simple mistake could make it very hard to debug
-  // issues with users being randomly logged out.
+  // Only check auth for protected routes
+  if (request.nextUrl.pathname.startsWith("/protected")) {
+    try {
+      const { data } = await supabase.auth.getClaims();
+      const user = data?.claims;
 
-  // IMPORTANT: If you remove getClaims() and you use server-side rendering
-  // with the Supabase client, your users may be randomly logged out.
-  const { data } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (
-    request.nextUrl.pathname !== "/" &&
-    !user &&
-    !request.nextUrl.pathname.startsWith("/login") &&
-    !request.nextUrl.pathname.startsWith("/auth")
-  ) {
-    // no user, potentially respond by redirecting the user to the login page
-    const url = request.nextUrl.clone();
-    url.pathname = "/auth/login";
-    return NextResponse.redirect(url);
+      if (!user) {
+        // no user, redirect to login page
+        const url = request.nextUrl.clone();
+        url.pathname = "/auth/login";
+        return NextResponse.redirect(url);
+      }
+    } catch {
+      // If auth check fails, redirect to login
+      const url = request.nextUrl.clone();
+      url.pathname = "/auth/login";
+      return NextResponse.redirect(url);
+    }
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.

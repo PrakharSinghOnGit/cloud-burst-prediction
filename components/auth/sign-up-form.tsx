@@ -88,6 +88,10 @@ export function SignUpForm({
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/protected`,
+          data: {
+            full_name: name,
+            phone: phoneNumber,
+          },
         },
       });
       if (error) throw error;
@@ -96,8 +100,16 @@ export function SignUpForm({
           phone: phoneNumber,
           name,
         });
+
+        // If email confirmation is not required, redirect to protected area
+        if (user.email_confirmed_at) {
+          router.push("/protected");
+        } else {
+          router.push("/auth/sign-up-success");
+        }
+      } else {
+        router.push("/auth/sign-up-success");
       }
-      router.push("/auth/sign-up-success");
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {

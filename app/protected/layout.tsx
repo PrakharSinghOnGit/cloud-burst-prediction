@@ -20,7 +20,6 @@ export default function ProtectedLayout({
             <div className="flex">
               <div className="flex items-center gap-3">
                 <SidebarTrigger />
-                {/* <Title /> */}
               </div>
               <div className="flex gap-3 self-end ml-auto">
                 <Badge variant={"outline"} color="blue">
