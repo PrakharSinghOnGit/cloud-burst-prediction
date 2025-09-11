@@ -1,0 +1,12 @@
+tqdm
+numpy
+pandas
+matplotlib
+fastapi
+pydantic
+uvicorn
+joblib
+xgboost
+scikit-learn
+tensorflow
+python-multipart

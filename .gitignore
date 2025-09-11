@@ -44,3 +44,9 @@ next-env.d.ts
 
 # Python Virtual Enviorment
 venv
+
+# Dataset
+cloud_dataset
+
+# Cache
+__pycache__
