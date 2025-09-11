@@ -1,14 +1,27 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
-from typing import List, Optional
-import numpy as np
 import joblib
 import random
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split
+import numpy as np
 import pandas as pd
 
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware 
+
+from pydantic import BaseModel
+
+from typing import List, Optional
+
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # -----------------------------
 # Load Dataset & Fit Scaler
