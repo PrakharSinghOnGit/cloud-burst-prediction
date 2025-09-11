@@ -34,7 +34,7 @@ export function usePredictionData() {
   const [error, setError] = useState<string | null>(null);
   const fetchData = async () => {
     try {
-      const response = await fetch("http://34.131.144.192:8000/latest-result/");
+      const response = await fetch("http://data:8000/latest-result/");
       if (!response.ok) {
         throw new Error("Failed to fetch prediction data");
       }
