@@ -32,7 +32,7 @@ const generateMailto = (formData: FormData) => {
   const phone = formData.get("phone") as string;
   const message = formData.get("message") as string;
 
-  const recipientEmail = "awplhelper@gmail.com";
+  const recipientEmail = "ileshdhall@gmail.com";
   const subject = "Contact Form Submission from " + (name || "Website Visitor");
   const body = `
 Name: ${name || "Not provided"}
@@ -50,7 +50,6 @@ This message was sent from the AWPL Helper contact form.
     subject
   )}&body=${encodeURIComponent(body)}`;
 
-  // Open the user's email client
   window.location.href = mailtoLink;
 };
 
