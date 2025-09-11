@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  AlertCircle,
-  Cloud,
-  // FileQuestion,
-  ShieldAlert,
-  HelpCircle,
-  LayoutDashboard,
-} from "lucide-react";
+import { Cloud, ShieldAlert, HelpCircle, LayoutDashboard } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -30,10 +23,10 @@ const Links = [
     name: "Dashboard",
     icon: LayoutDashboard,
   },
-  {
-    name: "Alerts",
-    icon: AlertCircle,
-  },
+  // {
+  //   name: "Alerts",
+  //   icon: AlertCircle,
+  // },
   {
     name: "Precautions",
     icon: ShieldAlert,

@@ -5,8 +5,8 @@ import RainfallLineChart from "./dashboard/RainfallLineChart";
 import CloudburstProbability from "./dashboard/CloudburstProbability";
 import CloudburstInfo from "./dashboard/CloudburstInfo";
 import HourlyForecastBar from "./dashboard/HourlyForecastBar";
-import RecentAlerts from "./dashboard/RecentAlerts";
-import RiskByZone from "./dashboard/RiskByZone";
+// import RecentAlerts from "./dashboard/RecentAlerts";
+// import RiskByZone from "./dashboard/RiskByZone";
 import WindHumidity from "./dashboard/WindHumidity";
 import { AnimatedGroup } from "@/components/ui/animated-group";
 import { Button } from "@/components/ui/button";
@@ -58,15 +58,15 @@ export default function Dashboard() {
         <div className="col-span-1 md:col-span-2">
           <HourlyForecastBar />
         </div>
-        <div>
+        {/* <div>
           <RiskByZone />
-        </div>
+        </div> */}
         <div className="col-span-1 md:col-span-2">
           <WindHumidity />
         </div>
-        <div className="md:col-span-2 lg:col-span-3">
+        {/* <div className="md:col-span-2 lg:col-span-3">
           <RecentAlerts />
-        </div>
+        </div> */}
         <div className="md:col-span-2 lg:col-span-3">
           <CloudburstInfo />
         </div>
