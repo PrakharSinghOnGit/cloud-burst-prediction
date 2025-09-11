@@ -19,7 +19,7 @@ import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { useEffect, useState } from "react";
 export const description = "A radial chart with text";
 
-export function ChartRadialText({ val }: { val: number | null }) {
+export function ChartRadialText({ val }: { val: number }) {
   const chartConfig = {} satisfies ChartConfig;
   const chartData = [{ browser: "safari", visitors: val, fill: "blue" }];
   const [pro, setPro] = useState<number>(0);

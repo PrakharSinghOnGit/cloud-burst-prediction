@@ -1,5 +1,5 @@
 import { useProfile } from "@/hooks/useDatabase";
-import { usePredictionData } from "@/hooks/usePredictionData";
+import { usePredictionDataContext } from "@/contexts/PredictionDataContext";
 import DashboardSkeleton from "./ui/DashboardSkeleton";
 import { AnimatedGroup } from "@/components/ui/animated-group";
 import { Button } from "@/components/ui/button";
@@ -27,14 +27,17 @@ export default function Dashboard() {
     data: predictionData,
     loading: predictionLoading,
     error: predictionError,
+    getSensorHistory,
     refresh,
-  } = usePredictionData();
+  } = usePredictionDataContext();
 
   if (profileLoading || predictionLoading) return <DashboardSkeleton />;
   if (profile?.length == 0 || !profile)
     return <div>You don&apos;t have a profile yet.</div>;
   if (profileError)
     return <div>Error loading profile: {profileError.message}</div>;
+
+  // Remove the unused function since we'll use getSensorHistory directly
 
   return (
     <div>
@@ -104,7 +107,16 @@ export default function Dashboard() {
               </CardContent>
             </Card>
             <ChartRadialText
-              val={predictionData.details.final_prediction_prob}
+              val={
+                predictionData.details.final_prediction_prob
+                  ? predictionData.details.final_prediction_prob
+                  : (predictionData.details.current_prediction_prob.rf_tabular +
+                      predictionData.details.current_prediction_prob
+                        .svc_tabular +
+                      predictionData.details.current_prediction_prob
+                        .xgboost_tabular) /
+                    3
+              }
             />
             <LineChartCard
               type="step"
@@ -114,6 +126,7 @@ export default function Dashboard() {
               desc="Current cloud top height"
               color="blue"
               icon={<AlertTriangle className="h-6 w-6 text-muted-foreground" />}
+              persistentData={getSensorHistory(0)}
             />
             <LineChartCard
               type="monotone"
@@ -123,6 +136,7 @@ export default function Dashboard() {
               desc="Current cloud base height"
               color="pink"
               icon={<CloudAlert className="h-6 w-6 text-muted-foreground" />}
+              persistentData={getSensorHistory(1)}
             />
             <LineChartCard
               type="monotone"
@@ -132,6 +146,7 @@ export default function Dashboard() {
               desc="Optical Thickness of the cloud"
               color="purple"
               icon={<EyeIcon className="h-6 w-6 text-muted-foreground" />}
+              persistentData={getSensorHistory(2)}
             />
             <LineChartCard
               type="step"
@@ -141,6 +156,7 @@ export default function Dashboard() {
               desc="Current rainfall intensity"
               color="teal"
               icon={<Droplet className="h-6 w-6 text-muted-foreground" />}
+              persistentData={getSensorHistory(3)}
             />
             <LineChartCard
               type="bump"
@@ -150,6 +166,7 @@ export default function Dashboard() {
               desc="Current humidity level"
               color="cyan"
               icon={<Wind className="h-6 w-6 text-muted-foreground" />}
+              persistentData={getSensorHistory(4)}
             />
             <LineChartCard
               type="monotone"
@@ -159,6 +176,7 @@ export default function Dashboard() {
               desc="Current Temperature"
               color="orange"
               icon={<Thermometer className="h-6 w-6 text-muted-foreground" />}
+              persistentData={getSensorHistory(5)}
             />
             <LineChartCard
               type="monotone"
@@ -168,6 +186,7 @@ export default function Dashboard() {
               desc="Current cloud top height"
               color="yellow"
               icon={<Thermometer className="h-6 w-6 text-muted-foreground" />}
+              persistentData={getSensorHistory(6)}
             />
           </AnimatedGroup>
         )}

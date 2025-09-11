@@ -44,6 +44,7 @@ interface ValueCardProps {
     | "stepAfter";
   icon: React.ReactNode;
   color?: string;
+  persistentData?: number[]; // Optional pre-built chart data
 }
 
 const LineChartCard = ({
@@ -54,12 +55,19 @@ const LineChartCard = ({
   icon,
   type,
   color,
+  persistentData,
 }: ValueCardProps) => {
-  const [chartData, setchartData] = useState<number[]>([]);
+  const [chartData, setchartData] = useState<number[]>(persistentData || []);
 
   useEffect(() => {
-    setchartData((prev) => [...prev, value].slice(-MAX_DATA_POINTS));
-  }, [value]);
+    // If persistent data is provided, use it directly
+    if (persistentData) {
+      setchartData(persistentData);
+    } else {
+      // Otherwise, use the old behavior
+      setchartData((prev) => [...prev, value].slice(-MAX_DATA_POINTS));
+    }
+  }, [value, persistentData]);
 
   const getTrend = () => {
     if (chartData.length < 2) return { direction: "flat", percentage: 0 };
@@ -139,7 +147,12 @@ const LineChartCard = ({
                   interval="preserveStartEnd"
                 />
                 <YAxis hide />
-                <Tooltip />
+                <Tooltip
+                  contentStyle={{
+                    background: "var(--background)",
+                    border: "1px solid #eee",
+                  }}
+                />
                 <Line
                   dataKey="value"
                   strokeWidth={2}
