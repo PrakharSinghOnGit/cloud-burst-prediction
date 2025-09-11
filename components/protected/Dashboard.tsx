@@ -6,13 +6,21 @@ import RainfallLineChart from "./dashboard/RainfallLineChart";
 import CloudburstProbability from "./dashboard/CloudburstProbability";
 import CloudburstInfo from "./dashboard/CloudburstInfo";
 import HourlyForecastBar from "./dashboard/HourlyForecastBar";
-// import RecentAlerts from "./dashboard/RecentAlerts";
-// import RiskByZone from "./dashboard/RiskByZone";
+import RecentAlerts from "./dashboard/RecentAlerts";
 import WindHumidity from "./dashboard/WindHumidity";
 import { AnimatedGroup } from "@/components/ui/animated-group";
 import { Button } from "@/components/ui/button";
-import { Download, Share2, RefreshCw, AlertTriangle } from "lucide-react";
+import {
+  RefreshCw,
+  AlertTriangle,
+  CloudAlert,
+  EyeIcon,
+  Droplet,
+  Wind,
+  Thermometer,
+} from "lucide-react";
 import MapWidget from "./dashboard/MapWidget";
+import ValueCard from "./dashboard/cards/ValueCard";
 
 export default function Dashboard() {
   const {
@@ -24,9 +32,6 @@ export default function Dashboard() {
     data: predictionData,
     loading: predictionLoading,
     error: predictionError,
-    getHighestProbability,
-    getModelConsensus,
-    getDataCollectionProgress,
     refresh,
   } = usePredictionData();
 
@@ -35,10 +40,6 @@ export default function Dashboard() {
     return <div>You don&apos;t have a profile yet.</div>;
   if (profileError)
     return <div>Error loading profile: {profileError.message}</div>;
-
-  const probability = getHighestProbability();
-  const consensus = getModelConsensus();
-  const progress = getDataCollectionProgress();
 
   return (
     <div>
@@ -73,7 +74,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="px-5 pb-5">
+      {/* <div className="px-5 pb-5">
         <AnimatedGroup preset="slide" className="[&>*]:will-change-transform">
           <div className="flex flex-col gap-3">
             <div className="flex flex-wrap gap-2">
@@ -84,57 +85,91 @@ export default function Dashboard() {
                 <Share2 className="h-4 w-4" /> Share Analysis
               </Button>
             </div>
-            <KpiCards
-              intensityMmPerHr={predictionData?.details.last_input[0] || 0}
-              probabilityPct={Math.round(probability * 100)}
-              activeAlerts={consensus > 66 ? 2 : consensus > 33 ? 1 : 0}
-              dataProgress={progress}
-              predictionStatus={predictionData?.message || "No data available"}
-            />
           </div>
         </AnimatedGroup>
-      </div>
+      </div> */}
 
       <AnimatedGroup
         preset="blur-slide"
-        className="grid gap-3 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 px-5 pb-10 [&>*]:will-change-transform"
+        className="grid gap-3 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 px-5 pb-10"
       >
-        <div className="col-span-1 md:col-span-2">
-          <RainfallLineChart />
-        </div>
-        <div>
-          <CloudburstProbability
-            probability={probability}
-            consensus={consensus}
-            modelProbabilities={predictionData?.details.current_prediction_prob}
-          />
-        </div>
-        <div className="col-span-1 md:col-span-2 lg:col-span-3">
-          <MapWidget />
-        </div>
-        <div className="col-span-1 md:col-span-2">
-          <HourlyForecastBar />
-        </div>
-        {/* <div>
-          <RiskByZone />
-        </div> */}
-        <div className="col-span-1 md:col-span-2">
-          <WindHumidity
-            humidity={predictionData?.details.last_input[2] || 0}
-            windSpeed={predictionData?.details.last_input[4] || 0}
-            temperature={predictionData?.details.last_input[1] || 0}
-            pressure={predictionData?.details.last_input[6] || 0}
-          />
-        </div>
-        {/* <div className="md:col-span-2 lg:col-span-3">
-          <RecentAlerts />
-        </div> */}
-        <div className="md:col-span-2 lg:col-span-3">
-          <CloudburstInfo
-            predictionData={predictionData}
-            dataProgress={progress}
-          />
-        </div>
+        <ValueCard
+          title="Cloud Top Height"
+          value={predictionData?.details.last_input[0]}
+          unit="km"
+          desc="Current cloud top height"
+          icon={<AlertTriangle className="h-6 w-6 text-muted-foreground" />}
+        />
+        <ValueCard
+          title="Cloud Base Height"
+          value={predictionData?.details.last_input[1]}
+          unit="km"
+          desc="Current cloud base height"
+          icon={<CloudAlert className="h-6 w-6 text-muted-foreground" />}
+        />
+        <ValueCard
+          title="Optical Thickness"
+          value={predictionData?.details.last_input[2]}
+          unit=""
+          desc="Optical Thickness of the cloud"
+          icon={<EyeIcon className="h-6 w-6 text-muted-foreground" />}
+        />
+        <ValueCard
+          title="Rainfall Intensity"
+          value={predictionData?.details.last_input[3]}
+          unit="mm"
+          desc="Current rainfall intensity"
+          icon={<Droplet className="h-6 w-6 text-muted-foreground" />}
+        />
+        <ValueCard
+          title="Humidity"
+          value={predictionData?.details.last_input[4]}
+          unit="%"
+          desc="Current humidity level"
+          icon={<Wind className="h-6 w-6 text-muted-foreground" />}
+        />
+        <ValueCard
+          title="Temperature"
+          value={predictionData?.details.last_input[5]}
+          unit="°C"
+          desc="Current Temperature"
+          icon={<Thermometer className="h-6 w-6 text-muted-foreground" />}
+        />
+        <ValueCard
+          title="Pressure"
+          value={predictionData?.details.last_input[6]}
+          unit="m"
+          desc="Current cloud top height"
+          icon={<Thermometer className="h-6 w-6 text-muted-foreground" />}
+        />
+
+        <RainfallLineChart />
+
+        {/* <KpiCards
+          intensityMmPerHr={predictionData?.details.last_input[0] || 0}
+          probabilityPct={Math.round(probability * 100)}
+          activeAlerts={consensus > 66 ? 2 : consensus > 33 ? 1 : 0}
+          dataProgress={progress}
+          predictionStatus={predictionData?.message || "No data available"}
+        /> */}
+        {/* <CloudburstProbability
+          probability={probability}
+          consensus={consensus}
+          modelProbabilities={predictionData?.details.current_prediction_prob}
+        /> */}
+        <MapWidget />
+        <HourlyForecastBar />
+        <WindHumidity
+          humidity={predictionData?.details.last_input[2] || 0}
+          windSpeed={predictionData?.details.last_input[4] || 0}
+          temperature={predictionData?.details.last_input[1] || 0}
+          pressure={predictionData?.details.last_input[6] || 0}
+        />
+        <RecentAlerts />
+        {/* <CloudburstInfo
+          predictionData={predictionData}
+          dataProgress={progress}
+        /> */}
       </AnimatedGroup>
     </div>
   );
