@@ -4,8 +4,23 @@ from typing import List, Optional
 import numpy as np
 import joblib
 import random
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+import pandas as pd
 
 app = FastAPI()
+
+# -----------------------------
+# Load Dataset & Fit Scaler
+# -----------------------------
+df = pd.read_csv("num_model/data/cloudburst_dataset.csv")
+X = df.drop(columns=["cloud_burst", "source_type"])
+y = df["cloud_burst"]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
 
 # -----------------------------
 # Load tabular models
@@ -23,13 +38,15 @@ models = {
     "svc_tabular": svc_model,
 }
 
+# -----------------------------
 # Rolling predictions per model
+# -----------------------------
 WINDOW_SIZE = 15
 rolling_preds = {name: [] for name in models.keys()}
 
 # Latest prediction result
 latest_result = None
-last_input_data = None  # <-- Store last received data
+last_input_data = None  # Store last received data
 
 # -----------------------------
 # Global lists for top heights
@@ -57,8 +74,14 @@ def get_prediction(model_name: str, model, input_data) -> int:
     else:
         input_data[0] = random.choice(non_cloudburst_top_height_range)
 
+    # Convert to 2D
     features = np.array(input_data, dtype=float).reshape(1, -1)
-    pred = model.predict(features)
+
+    # Scale features before prediction
+    features_scaled = scaler.transform(features)
+
+    # Predict
+    pred = model.predict(features_scaled)
     return int(pred[0])
 
 # -----------------------------
