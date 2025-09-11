@@ -143,7 +143,7 @@ export const Hero = () => {
 const menuItems = [
   { name: "Features", href: "#feature" },
   { name: "Working", href: "#working" },
-  { name: "FAQ", href: "#faq" },
+  // { name: "FAQ", href: "#faq" },
   { name: "Contact", href: "#contact" },
 ];
 

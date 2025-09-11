@@ -65,11 +65,11 @@ export default function Page1() {
             "Power/Utility Helpline: As per city utility numbers",
           ])}
         </AnimatedCard>
+        <DoDonts />
+        <EmergencyKit />
+        <Faqs />
+        <Resources />
       </AnimatedGroup>
-      <DoDonts />
-      <EmergencyKit />
-      <Faqs />
-      <Resources />
     </div>
   );
 }

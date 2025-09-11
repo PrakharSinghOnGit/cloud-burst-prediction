@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/card";
 import React, { useEffect, useState } from "react";
 import {
-  CartesianGrid,
   Line,
   LineChart,
   XAxis,
@@ -20,86 +19,54 @@ import {
 } from "recharts";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 
-interface DataPoint {
-  timestamp: number;
-  value: number;
-}
+const MAX_DATA_POINTS = 20;
 
 interface ValueCardProps {
   title: string;
-  value: string | number | undefined;
+  value: number;
   unit: string;
   desc: string;
+  type:
+    | "basis"
+    | "basisClosed"
+    | "basisOpen"
+    | "bumpX"
+    | "bumpY"
+    | "bump"
+    | "linear"
+    | "linearClosed"
+    | "natural"
+    | "monotoneX"
+    | "monotoneY"
+    | "monotone"
+    | "step"
+    | "stepBefore"
+    | "stepAfter";
   icon: React.ReactNode;
-  data?: DataPoint[];
-  maxDataPoints?: number;
-  showTrend?: boolean;
   color?: string;
 }
 
-const ValueCard = ({
+const LineChartCard = ({
   title,
   value,
   unit,
   desc,
   icon,
-  data = [],
-  maxDataPoints = 20,
-  showTrend = true,
+  type,
+  color,
 }: ValueCardProps) => {
-  const [chartData, setChartData] = useState<DataPoint[]>([]);
+  const [chartData, setchartData] = useState<number[]>([]);
 
   useEffect(() => {
-    console.log("ValueCard received data:", data); // Debug log
+    setchartData((prev) => [...prev, value].slice(-MAX_DATA_POINTS));
+  }, [value]);
 
-    // If we have new data points, update chartData
-    if (data && data.length > 0) {
-      setChartData((prev) => {
-        // If data has timestamps, use them; otherwise generate current timestamp
-        const processedData = data.map((point, index) => ({
-          timestamp:
-            point.timestamp || Date.now() - (data.length - index - 1) * 60000, // 1 min intervals
-          value:
-            typeof point.value === "number"
-              ? point.value
-              : parseFloat(String(point.value)) || 0,
-        }));
-
-        // Combine with previous data and keep only recent points
-        const combined = [...prev, ...processedData];
-        // Remove duplicates based on timestamp and keep only maxDataPoints
-        const unique = combined.filter(
-          (item, index, self) =>
-            index === self.findIndex((t) => t.timestamp === item.timestamp)
-        );
-
-        return unique.slice(-maxDataPoints);
-      });
-    }
-  }, [data, maxDataPoints]);
-
-  // Generate sample data if no real data is available
-  useEffect(() => {
-    if (chartData.length === 0 && (!data || data.length === 0)) {
-      // Generate some sample data if no data is provided (for testing)
-      const now = Date.now();
-      const sampleData: DataPoint[] = Array.from({ length: 10 }, (_, i) => ({
-        timestamp: now - (9 - i) * 60000, // Last 10 minutes
-        value: Math.random() * 100 + 50, // Random values between 50-150
-      }));
-      setChartData(sampleData);
-    }
-  }, [chartData.length, data]);
-
-  console.log("Current chartData length:", chartData.length); // Debug log
-
-  // Calculate trend
   const getTrend = () => {
     if (chartData.length < 2) return { direction: "flat", percentage: 0 };
 
     const recent = chartData.slice(-3); // Last 3 points for trend
-    const firstValue = recent[0]?.value || 0;
-    const lastValue = recent[recent.length - 1]?.value || 0;
+    const firstValue = recent[0] || 0;
+    const lastValue = recent[recent.length - 1] || 0;
 
     if (firstValue === 0) return { direction: "flat", percentage: 0 };
 
@@ -114,16 +81,10 @@ const ValueCard = ({
   // Format data for chart display
   const formattedChartData = chartData.map((point, index) => ({
     index: index,
-    value: point.value,
-    timestamp: point.timestamp,
-    label: new Date(point.timestamp).toLocaleTimeString("en-US", {
-      hour12: false,
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
+    value: point,
+    timestamp: new Date().getTime(),
+    label: `T-${chartData.length - index}`,
   }));
-
-  console.log("Formatted Chart Data:", formattedChartData);
 
   const getTrendIcon = () => {
     switch (trend.direction) {
@@ -139,16 +100,16 @@ const ValueCard = ({
   const getTrendColor = () => {
     switch (trend.direction) {
       case "up":
-        return "text-green-600 dark:text-green-400";
+        return "text-green-600/70 dark:text-green-400/70";
       case "down":
-        return "text-red-600 dark:text-red-400";
+        return "text-red-600/70 dark:text-red-400/70";
       default:
         return "text-muted-foreground";
     }
   };
 
   return (
-    <Card className="w-full">
+    <Card className="w-full h-full">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
@@ -169,26 +130,27 @@ const ValueCard = ({
           {formattedChartData.length > 1 ? (
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={formattedChartData}>
-                <CartesianGrid vertical={false} strokeDasharray="3 3" />
                 <XAxis
-                //   dataKey="label"
-                //   tickLine={false}
-                //   axisLine={false}
-                //   tickMargin={8}
-                //   tick={{ fontSize: 10 }}
-                //   interval="preserveStartEnd"
+                  dataKey="label"
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                  tick={{ fontSize: 10 }}
+                  interval="preserveStartEnd"
                 />
                 <YAxis hide />
                 <Tooltip />
                 <Line
                   dataKey="value"
                   strokeWidth={2}
+                  type={type}
+                  color={color}
                   dot={{
-                    strokeWidth: 2,
-                    r: 2,
+                    strokeWidth: 3,
+                    r: 3,
                   }}
                   activeDot={{
-                    r: 4,
+                    r: 5,
                   }}
                 />
               </LineChart>
@@ -200,7 +162,7 @@ const ValueCard = ({
           )}
         </div>
       </CardContent>
-      {showTrend && formattedChartData.length > 2 && (
+      {formattedChartData.length > 2 && (
         <CardFooter className="pt-0">
           <div className="flex w-full items-start gap-2 text-sm">
             <div
@@ -224,4 +186,4 @@ const ValueCard = ({
   );
 };
 
-export default ValueCard;
+export default LineChartCard;

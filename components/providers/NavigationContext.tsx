@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, ReactNode } from "react";
 import Dashboard from "@/components/protected/Dashboard";
-import Alerts from "@/components/protected/Alerts";
+import Weather from "@/components/protected/Weather";
 import Page1 from "@/components/protected/Page1";
 import Page2 from "@/components/protected/Page2";
 import Page3 from "@/components/protected/Page3";
@@ -25,7 +25,7 @@ type pageProp = {
 
 const pages: pageProp[] = [
   { name: "Dashboard", component: <Dashboard /> },
-  { name: "Alerts", component: <Alerts /> },
+  { name: "Weather", component: <Weather /> },
   { name: "Precautions", component: <Page1 /> },
   { name: "idk what to add 2", component: <Page2 /> },
   { name: "idk what to add final", component: <Page3 /> },

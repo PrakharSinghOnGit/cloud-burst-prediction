@@ -1,13 +1,6 @@
 import { useProfile } from "@/hooks/useDatabase";
 import { usePredictionData } from "@/hooks/usePredictionData";
 import DashboardSkeleton from "./ui/DashboardSkeleton";
-import KpiCards from "./dashboard/KpiCards";
-import RainfallLineChart from "./dashboard/RainfallLineChart";
-import CloudburstProbability from "./dashboard/CloudburstProbability";
-import CloudburstInfo from "./dashboard/CloudburstInfo";
-import HourlyForecastBar from "./dashboard/HourlyForecastBar";
-import RecentAlerts from "./dashboard/RecentAlerts";
-import WindHumidity from "./dashboard/WindHumidity";
 import { AnimatedGroup } from "@/components/ui/animated-group";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,8 +12,10 @@ import {
   Wind,
   Thermometer,
 } from "lucide-react";
-import MapWidget from "./dashboard/MapWidget";
-import ValueCard from "./dashboard/cards/ValueCard";
+import LineChartCard from "./dashboard/cards/LineChartCard";
+// import { ChartRadarDots } from "./dashboard/cards/RadarChart";
+import { ChartRadialText } from "./dashboard/cards/RadialChart";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
 export default function Dashboard() {
   const {
@@ -74,103 +69,108 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* <div className="px-5 pb-5">
-        <AnimatedGroup preset="slide" className="[&>*]:will-change-transform">
-          <div className="flex flex-col gap-3">
-            <div className="flex flex-wrap gap-2">
-              <Button size="sm" variant="outline" className="gap-2">
-                <Download className="h-4 w-4" /> Download Report
-              </Button>
-              <Button size="sm" variant="outline" className="gap-2">
-                <Share2 className="h-4 w-4" /> Share Analysis
-              </Button>
-            </div>
-          </div>
-        </AnimatedGroup>
-      </div> */}
-
-      <AnimatedGroup
-        preset="blur-slide"
-        className="grid gap-3 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 px-5 pb-10"
-      >
-        <ValueCard
-          title="Cloud Top Height"
-          value={predictionData?.details.last_input[0]}
-          unit="km"
-          desc="Current cloud top height"
-          icon={<AlertTriangle className="h-6 w-6 text-muted-foreground" />}
-        />
-        <ValueCard
-          title="Cloud Base Height"
-          value={predictionData?.details.last_input[1]}
-          unit="km"
-          desc="Current cloud base height"
-          icon={<CloudAlert className="h-6 w-6 text-muted-foreground" />}
-        />
-        <ValueCard
-          title="Optical Thickness"
-          value={predictionData?.details.last_input[2]}
-          unit=""
-          desc="Optical Thickness of the cloud"
-          icon={<EyeIcon className="h-6 w-6 text-muted-foreground" />}
-        />
-        <ValueCard
-          title="Rainfall Intensity"
-          value={predictionData?.details.last_input[3]}
-          unit="mm"
-          desc="Current rainfall intensity"
-          icon={<Droplet className="h-6 w-6 text-muted-foreground" />}
-        />
-        <ValueCard
-          title="Humidity"
-          value={predictionData?.details.last_input[4]}
-          unit="%"
-          desc="Current humidity level"
-          icon={<Wind className="h-6 w-6 text-muted-foreground" />}
-        />
-        <ValueCard
-          title="Temperature"
-          value={predictionData?.details.last_input[5]}
-          unit="°C"
-          desc="Current Temperature"
-          icon={<Thermometer className="h-6 w-6 text-muted-foreground" />}
-        />
-        <ValueCard
-          title="Pressure"
-          value={predictionData?.details.last_input[6]}
-          unit="m"
-          desc="Current cloud top height"
-          icon={<Thermometer className="h-6 w-6 text-muted-foreground" />}
-        />
-
-        <RainfallLineChart />
-
-        {/* <KpiCards
-          intensityMmPerHr={predictionData?.details.last_input[0] || 0}
-          probabilityPct={Math.round(probability * 100)}
-          activeAlerts={consensus > 66 ? 2 : consensus > 33 ? 1 : 0}
-          dataProgress={progress}
-          predictionStatus={predictionData?.message || "No data available"}
-        /> */}
-        {/* <CloudburstProbability
-          probability={probability}
-          consensus={consensus}
-          modelProbabilities={predictionData?.details.current_prediction_prob}
-        /> */}
-        <MapWidget />
-        <HourlyForecastBar />
-        <WindHumidity
-          humidity={predictionData?.details.last_input[2] || 0}
-          windSpeed={predictionData?.details.last_input[4] || 0}
-          temperature={predictionData?.details.last_input[1] || 0}
-          pressure={predictionData?.details.last_input[6] || 0}
-        />
-        <RecentAlerts />
-        {/* <CloudburstInfo
-          predictionData={predictionData}
-          dataProgress={progress}
-        /> */}
-      </AnimatedGroup>
+      {predictionData?.details.last_input[0] !== undefined &&
+        predictionData?.details.last_input[1] !== undefined &&
+        predictionData?.details.last_input[2] !== undefined &&
+        predictionData?.details.last_input[3] !== undefined &&
+        predictionData?.details.last_input[4] !== undefined &&
+        predictionData?.details.last_input[5] !== undefined &&
+        predictionData?.details.last_input[6] !== undefined && (
+          <AnimatedGroup
+            preset="blur-slide"
+            className="grid gap-3 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 px-5 pb-10"
+          >
+            {/* <ChartRadarDots arr={predictionData?.details.last_input} /> */}
+            <Card className="w-full h-full flex flex-col">
+              <CardHeader>
+                <CardTitle>Cloudburst Warning</CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-col text-center items-center justify-center grow">
+                {predictionData.details.final_prediction == 1 ? (
+                  <>
+                    <div className="text-2xl font-bold text-red-600">
+                      Cloud Burst Detected!
+                    </div>
+                    <p>Take immediate precautions!</p>
+                  </>
+                ) : (
+                  <>
+                    <div className="text-2xl font-bold text-green-600">
+                      Low Risk of Cloudburst
+                    </div>
+                    <p>Conditions are stable.</p>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+            <ChartRadialText
+              val={predictionData.details.final_prediction_prob}
+            />
+            <LineChartCard
+              type="step"
+              title="Cloud Top Height"
+              value={predictionData?.details.last_input[0]}
+              unit="km"
+              desc="Current cloud top height"
+              color="blue"
+              icon={<AlertTriangle className="h-6 w-6 text-muted-foreground" />}
+            />
+            <LineChartCard
+              type="monotone"
+              title="Cloud Base Height"
+              value={predictionData?.details.last_input[1]}
+              unit="km"
+              desc="Current cloud base height"
+              color="pink"
+              icon={<CloudAlert className="h-6 w-6 text-muted-foreground" />}
+            />
+            <LineChartCard
+              type="monotone"
+              title="Optical Thickness"
+              value={predictionData?.details.last_input[2]}
+              unit=""
+              desc="Optical Thickness of the cloud"
+              color="purple"
+              icon={<EyeIcon className="h-6 w-6 text-muted-foreground" />}
+            />
+            <LineChartCard
+              type="step"
+              title="Rainfall Intensity"
+              value={predictionData?.details.last_input[3]}
+              unit="mm"
+              desc="Current rainfall intensity"
+              color="teal"
+              icon={<Droplet className="h-6 w-6 text-muted-foreground" />}
+            />
+            <LineChartCard
+              type="bump"
+              title="Humidity"
+              value={predictionData?.details.last_input[4]}
+              unit="%"
+              desc="Current humidity level"
+              color="cyan"
+              icon={<Wind className="h-6 w-6 text-muted-foreground" />}
+            />
+            <LineChartCard
+              type="monotone"
+              title="Temperature"
+              value={predictionData?.details.last_input[5]}
+              unit="°C"
+              desc="Current Temperature"
+              color="orange"
+              icon={<Thermometer className="h-6 w-6 text-muted-foreground" />}
+            />
+            <LineChartCard
+              type="monotone"
+              title="Pressure"
+              value={predictionData?.details.last_input[6]}
+              unit="m"
+              desc="Current cloud top height"
+              color="yellow"
+              icon={<Thermometer className="h-6 w-6 text-muted-foreground" />}
+            />
+          </AnimatedGroup>
+        )}
     </div>
   );
 }

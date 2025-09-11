@@ -38,7 +38,7 @@ export default function RootLayout({
         >
           <SupabaseProvider>
             <AuthProvider>
-              <GlobalBG />
+              {/* <GlobalBG /> */}
               <div className="relative z-10 min-h-screen flex flex-col">
                 <div className="flex-1">{children}</div>
               </div>
