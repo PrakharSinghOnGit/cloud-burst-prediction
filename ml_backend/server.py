@@ -169,7 +169,7 @@ async def predict_image(file: UploadFile = File(...)):
 # -----------------------------
 # Endpoint: Receive data & rolling predictions
 # -----------------------------
-@app.post("/predict-and-store/")
+@app.post("/data/")
 async def predict_and_store(cloud: Optional[CloudArray] = None):
     global latest_result, last_input_data, vision_preds, image_received_in_window
 
