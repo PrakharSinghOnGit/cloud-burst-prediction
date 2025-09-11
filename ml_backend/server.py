@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 import numpy as np
 import joblib
+import random
 
 app = FastAPI()
 
@@ -30,6 +31,12 @@ rolling_preds = {name: [] for name in models.keys()}
 latest_result = None
 
 # -----------------------------
+# Global lists for top heights
+# -----------------------------
+cloudburst_top_height_range = [14000, 15000, 16000, 17000, 18000]
+non_cloudburst_top_height_range = [1000, 1200, 1400, 1600, 1800]
+
+# -----------------------------
 # IoT input schema
 # -----------------------------
 class CloudArray(BaseModel):
@@ -43,6 +50,12 @@ def get_prediction(model_name: str, model, input_data) -> int:
     Handles tabular models for now
     Returns 0 or 1
     """
+    # Inject random top height based on first element
+    if input_data[0] == 1:
+        input_data[0] = random.choice(cloudburst_top_height_range)
+    else:
+        input_data[0] = random.choice(non_cloudburst_top_height_range)
+
     features = np.array(input_data, dtype=float).reshape(1, -1)
     pred = model.predict(features)
     return int(pred[0])
@@ -50,7 +63,7 @@ def get_prediction(model_name: str, model, input_data) -> int:
 # -----------------------------
 # Endpoint: Receive data & rolling predictions
 # -----------------------------
-@app.post("/predict-and-store/")
+@app.post("/data/")
 async def predict_and_store(cloud: Optional[CloudArray] = None):
     global latest_result
 
@@ -59,7 +72,7 @@ async def predict_and_store(cloud: Optional[CloudArray] = None):
     for name, model in models.items():
         if cloud is None:
             continue
-        input_data = cloud.data
+        input_data = cloud.data.copy()  # copy to avoid modifying original
 
         # Get prediction and append
         try:
