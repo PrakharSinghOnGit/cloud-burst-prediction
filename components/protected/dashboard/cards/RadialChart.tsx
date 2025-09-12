@@ -73,7 +73,7 @@ export function ChartRadialText({ val }: { val: number }) {
                           <tspan
                             x={viewBox.cx}
                             y={viewBox.cy}
-                            className="fill-foreground text-4xl font-bold"
+                            className="fill-foreground text-3xl font-bold"
                           >
                             {pro.toLocaleString() + "%"}
                           </tspan>

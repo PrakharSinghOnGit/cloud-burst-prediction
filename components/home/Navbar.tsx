@@ -25,7 +25,7 @@ const Navbar = () => {
             className="text-2xl font-bold text-nowrap"
             style={{ fontFamily: "Bytesized" }}
           >
-            Burst Prediction
+            Skyris
           </div>
         </div>
 

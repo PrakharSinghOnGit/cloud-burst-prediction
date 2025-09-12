@@ -68,7 +68,7 @@ models = {
 # -----------------------------
 # Rolling predictions per model
 # -----------------------------
-WINDOW_SIZE = 15
+WINDOW_SIZE = 5
 rolling_preds = {name: [] for name in models.keys()}
 
 # Vision predictions (once per window)

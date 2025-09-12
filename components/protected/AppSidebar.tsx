@@ -77,7 +77,7 @@ export function AppSidebar() {
                 state == "collapsed" ? "" : ""
               }`}
             >
-              Burst Prediction
+              Skyris
             </p>
           </SidebarHeader>
         </Link>

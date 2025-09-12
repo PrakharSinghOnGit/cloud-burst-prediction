@@ -39,6 +39,41 @@ export default function Dashboard() {
 
   // Remove the unused function since we'll use getSensorHistory directly
 
+  if (
+    predictionError &&
+    predictionData?.details.last_input[0] !== undefined &&
+    predictionData?.details.last_input[1] !== undefined &&
+    predictionData?.details.last_input[2] !== undefined &&
+    predictionData?.details.last_input[3] !== undefined &&
+    predictionData?.details.last_input[4] !== undefined &&
+    predictionData?.details.last_input[5] !== undefined &&
+    predictionData?.details.last_input[6] !== undefined &&
+    predictionData?.details.current_prediction_prob.rf_tabular !== undefined &&
+    predictionData?.details.current_prediction_prob.svc_tabular !== undefined &&
+    predictionData?.details.current_prediction_prob.xgboost_tabular !==
+      undefined
+  ) {
+    return <div>No sensor data available.</div>;
+  }
+
+  const probab = predictionData?.details.final_prediction_prob
+    ? predictionData.details.final_prediction_prob
+    : predictionData?.details.current_prediction_prob.rf_tabular !==
+        undefined &&
+      predictionData?.details.current_prediction_prob.svc_tabular !==
+        undefined &&
+      predictionData?.details.current_prediction_prob.xgboost_tabular !==
+        undefined
+    ? Number(
+        (
+          ((predictionData.details.current_prediction_prob.rf_tabular +
+            predictionData.details.current_prediction_prob.svc_tabular +
+            predictionData.details.current_prediction_prob.xgboost_tabular) /
+            3) *
+          100
+        ).toFixed(2)
+      )
+    : 0;
   return (
     <div>
       <div className="flex items-center justify-between p-5 pb-3">
@@ -89,36 +124,32 @@ export default function Dashboard() {
                 <CardTitle>Cloudburst Warning</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col text-center items-center justify-center grow">
-                {predictionData.details.final_prediction == 1 ? (
+                {probab < 50 ? (
+                  <>
+                    <div className="text-2xl font-bold text-green-600">
+                      Low Risk of Cloudburst
+                    </div>
+                    <p>Conditions are stable!</p>
+                  </>
+                ) : probab >= 75 ? (
                   <>
                     <div className="text-2xl font-bold text-red-600">
-                      Cloud Burst Detected!
+                      High Risk of Cloudburst
                     </div>
                     <p>Take immediate precautions!</p>
                   </>
                 ) : (
                   <>
-                    <div className="text-2xl font-bold text-green-600">
-                      Low Risk of Cloudburst
+                    <div className="text-2xl font-bold text-orange-600">
+                      Medium Risk of Cloudburst
                     </div>
-                    <p>Conditions are stable.</p>
+                    <p>Stay alert and monitor conditions.</p>
                   </>
                 )}
               </CardContent>
             </Card>
-            <ChartRadialText
-              val={
-                predictionData.details.final_prediction_prob
-                  ? predictionData.details.final_prediction_prob
-                  : (predictionData.details.current_prediction_prob.rf_tabular +
-                      predictionData.details.current_prediction_prob
-                        .svc_tabular +
-                      predictionData.details.current_prediction_prob
-                        .xgboost_tabular) /
-                    3
-              }
-            />
-            <LineChartCard
+            <ChartRadialText val={probab} />
+            {/* <LineChartCard
               type="step"
               title="Cloud Top Height"
               value={predictionData?.details.last_input[0]}
@@ -127,7 +158,7 @@ export default function Dashboard() {
               color="blue"
               icon={<AlertTriangle className="h-6 w-6 text-muted-foreground" />}
               persistentData={getSensorHistory(0)}
-            />
+            /> */}
             <LineChartCard
               type="monotone"
               title="Cloud Base Height"
@@ -182,7 +213,7 @@ export default function Dashboard() {
               type="monotone"
               title="Pressure"
               value={predictionData?.details.last_input[6]}
-              unit="m"
+              unit="hpa"
               desc="Current cloud top height"
               color="yellow"
               icon={<Thermometer className="h-6 w-6 text-muted-foreground" />}
