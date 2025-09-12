@@ -96,7 +96,7 @@ class CloudArray(BaseModel):
 # -----------------------------
 def get_prediction(model_name: str, model, input_data):
     """
-    Returns both predicted class and probability of predicted class
+    Returns both predicted class and probability of cloud burst (class 1)
     """
     # Inject random top height based on first element
     if input_data[0] == 1:
@@ -111,11 +111,11 @@ def get_prediction(model_name: str, model, input_data):
     # Predict class
     pred = model.predict(features_scaled)[0]
 
-    # Get probability for predicted class
+    # Get probability for cloud burst (class 1)
     probs = model.predict_proba(features_scaled)[0]   # [prob_class0, prob_class1]
-    pred_prob = probs[pred]                           # probability of predicted class
+    cloudburst_prob = probs[1]                         # probability of cloud burst
 
-    return int(pred), float(pred_prob)
+    return int(pred), float(cloudburst_prob)
 
 # -----------------------------
 # Vision preprocessing
@@ -185,13 +185,13 @@ async def predict_and_store(cloud: Optional[CloudArray] = None):
     for name, model in models.items():
         input_data = cloud.data.copy()  # copy to avoid modifying original
         try:
-            pred, pred_prob = get_prediction(name, model, input_data)
+            pred, cloudburst_prob = get_prediction(name, model, input_data)
         except Exception as e:
             print(f"Prediction failed for {name}: {e}")
-            pred, pred_prob = None, None
+            pred, cloudburst_prob = None, None
 
-        # Store as tuple (prediction, probability)
-        rolling_preds[name].append((pred, pred_prob))
+        # Store as tuple (prediction, probability_of_cloudburst)
+        rolling_preds[name].append((pred, cloudburst_prob))
 
     # Compute final prediction if window is full
     if len(next(iter(rolling_preds.values()))) >= WINDOW_SIZE:
@@ -209,11 +209,14 @@ async def predict_and_store(cloud: Optional[CloudArray] = None):
         # Majority decision
         final_prediction = 1 if sum(all_votes) >= (len(all_votes) // 2 + 1) else 0
 
-        # Compute average probability of predicted class (tabular only)
+        # ---- FIXED PART: Always probability of class 1 (cloud burst) ----
         per_model_probs = []
         for preds in rolling_preds.values():
-            class_probs = [p[1] if p[0] == final_prediction else 1 - p[1] for p in preds]
-            per_model_probs.append(sum(class_probs) / len(class_probs))
+            # Take only probability of cloud burst (class 1)
+            class_1_probs = [p[1] for p in preds]
+            per_model_probs.append(sum(class_1_probs) / len(class_1_probs))
+
+        # Average across all models
         final_prediction_prob = sum(per_model_probs) / len(per_model_probs)
 
         # Reset for next window
@@ -228,7 +231,7 @@ async def predict_and_store(cloud: Optional[CloudArray] = None):
         "current_prediction_prob": {k: v[-1][1] if v else None for k, v in rolling_preds.items()},
         "vision_predictions": vision_preds if vision_preds else None,
         "final_prediction": final_prediction,
-        "final_prediction_prob": final_prediction_prob,
+        "final_prediction_prob": final_prediction_prob,  # <-- NOW PROB OF CLOUDBURST
         "window_status": {
             "current_size": len(next(iter(rolling_preds.values()))),
             "needed_for_final": max(0, WINDOW_SIZE - len(next(iter(rolling_preds.values()))))

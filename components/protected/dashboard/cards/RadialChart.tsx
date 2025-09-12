@@ -16,18 +16,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
-import { useEffect, useState } from "react";
 export const description = "A radial chart with text";
 
 export function ChartRadialText({ val }: { val: number }) {
   const chartConfig = {} satisfies ChartConfig;
   const chartData = [{ browser: "safari", visitors: val, fill: "blue" }];
-  const [pro, setPro] = useState<number>(0);
 
-  useEffect(() => {
-    if (val != null) setPro(val);
-  }, [val]);
-
+  if (isNaN(val)) val = 0;
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
@@ -47,7 +42,7 @@ export function ChartRadialText({ val }: { val: number }) {
             <RadialBarChart
               data={chartData}
               startAngle={0}
-              endAngle={pro * 3.6}
+              endAngle={val * 3.6}
               innerRadius={70}
               outerRadius={110}
             >
@@ -75,7 +70,7 @@ export function ChartRadialText({ val }: { val: number }) {
                             y={viewBox.cy}
                             className="fill-foreground text-3xl font-bold"
                           >
-                            {pro.toLocaleString() + "%"}
+                            {val.toLocaleString() + "%"}
                           </tspan>
                         </text>
                       );

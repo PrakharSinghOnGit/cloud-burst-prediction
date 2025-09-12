@@ -1,6 +1,12 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 
 const UPDATE_INTERVAL = 5000; // 5 seconds
 
@@ -62,31 +68,67 @@ export function PredictionDataProvider({
   const [error, setError] = useState<string | null>(null);
   const [chartHistory, setChartHistory] = useState<ChartDataPoint[]>([]);
 
-  const fetchData = async () => {
+  // Keep track of last known final prediction values
+  const [lastFinalPrediction, setLastFinalPrediction] = useState<number | null>(
+    null
+  );
+  const [lastFinalPredictionProb, setLastFinalPredictionProb] = useState<
+    number | null
+  >(null);
+
+  const fetchData = useCallback(async () => {
     try {
       const response = await fetch("http://34.131.144.192:8000/latest-result/");
       if (!response.ok) {
         throw new Error("Failed to fetch prediction data");
       }
       const result = await response.json();
-      setData(result);
+
+      // Update last known final prediction values if new ones are available
+      if (result.details.final_prediction !== null) {
+        setLastFinalPrediction(result.details.final_prediction);
+      }
+      if (result.details.final_prediction_prob !== null) {
+        setLastFinalPredictionProb(result.details.final_prediction_prob);
+      }
+
+      // Create modified result with persistent final prediction values
+      const modifiedResult = {
+        ...result,
+        details: {
+          ...result.details,
+          final_prediction:
+            result.details.final_prediction !== null
+              ? result.details.final_prediction
+              : lastFinalPrediction,
+          final_prediction_prob:
+            result.details.final_prediction_prob !== null
+              ? result.details.final_prediction_prob
+              : lastFinalPredictionProb,
+        },
+      };
+
+      setData(modifiedResult);
       setError(null);
 
       // Add to chart history
-      if (result.details) {
+      if (modifiedResult.details) {
         const now = new Date();
         const timeString = now.toLocaleTimeString();
 
         const newDataPoint: ChartDataPoint = {
           time: timeString,
-          xgboost: result.details.current_prediction_prob.xgboost_tabular * 100,
-          randomForest: result.details.current_prediction_prob.rf_tabular * 100,
-          svc: result.details.current_prediction_prob.svc_tabular * 100,
-          consensus: result.details.final_prediction_prob
-            ? result.details.final_prediction_prob * 100
+          xgboost:
+            modifiedResult.details.current_prediction_prob.xgboost_tabular *
+            100,
+          randomForest:
+            modifiedResult.details.current_prediction_prob.rf_tabular * 100,
+          svc: modifiedResult.details.current_prediction_prob.svc_tabular * 100,
+          consensus: modifiedResult.details.final_prediction_prob
+            ? modifiedResult.details.final_prediction_prob * 100
             : 0,
           timestamp: now.getTime(),
-          sensorReadings: result.details.last_input || [],
+          sensorReadings: modifiedResult.details.last_input || [],
         };
 
         setChartHistory((prev) => {
@@ -100,13 +142,13 @@ export function PredictionDataProvider({
     } finally {
       setLoading(false);
     }
-  };
+  }, [lastFinalPrediction, lastFinalPredictionProb]);
 
   useEffect(() => {
     fetchData();
     const interval = setInterval(fetchData, UPDATE_INTERVAL);
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchData]);
 
   const getSensorHistory = (sensorIndex: number): number[] => {
     return chartHistory.map((point) => point.sensorReadings[sensorIndex] || 0);
