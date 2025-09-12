@@ -272,7 +272,7 @@ const HeroHeader = () => {
                       className="bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600"
                     >
                       <Link href="/protected">
-                        <span>Dashboard</span>
+                        <span>Get Started</span>
                       </Link>
                     </Button>
                   </>

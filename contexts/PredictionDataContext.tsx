@@ -64,7 +64,7 @@ export function PredictionDataProvider({
 
   const fetchData = async () => {
     try {
-      const response = await fetch("http://api:8000/latest-result/");
+      const response = await fetch("http://34.131.144.192:8000/latest-result/");
       if (!response.ok) {
         throw new Error("Failed to fetch prediction data");
       }
