@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/components/providers/AuthProvider";
+import { ModeToggle } from "../ThemeChange";
 
 export const Hero = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -59,13 +60,13 @@ export const Hero = () => {
         <div className="relative z-10 flex items-center justify-center min-h-screen px-6">
           <div className="text-center max-w-4xl mx-auto">
             <motion.h1
-              className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight"
+              className="text-5xl md:text-7xl font-bold mb-6 leading-tight"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              Predicting{" "}
-              <span className="bg-gradient-to-r from-blue-400 via-teal-400 to-yellow-400 bg-clip-text text-transparent">
+              <span className="text-foreground">Predicting </span>
+              <span className="bg-gradient-to-r from-blue-400 via-teal-400 to-yellow-400 bg-clip-text text-transparent dark:from-blue-800 dark:via-teal-400 dark:to-yellow-400">
                 Cloudbursts
               </span>
               .<br />
@@ -73,7 +74,7 @@ export const Hero = () => {
             </motion.h1>
 
             <motion.p
-              className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed"
+              className="text-xl md:text-2xl text-foreground mb-8 max-w-3xl mx-auto leading-relaxed"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
@@ -89,7 +90,7 @@ export const Hero = () => {
               transition={{ duration: 0.8, delay: 0.4 }}
             >
               <HeroButtons />
-              <button className="px-8 py-4 bg-transparent border-2 border-white/30 text-white font-semibold rounded-full hover:bg-white/10 transition-all duration-300 backdrop-blur-sm">
+              <button className="px-8 py-4 bg-transparent border-2 border-foreground text-foreground font-semibold rounded-full hover:bg-white/10 transition-all duration-300 backdrop-blur-sm">
                 Learn More
               </button>
             </motion.div>
@@ -258,6 +259,7 @@ const HeroHeader = () => {
                 </ul>
               </div>
               <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
+                <ModeToggle />
                 {loading ? (
                   <Button variant="outline" size="sm" disabled>
                     <span>Loading...</span>

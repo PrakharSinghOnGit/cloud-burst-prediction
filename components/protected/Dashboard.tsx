@@ -56,8 +56,7 @@ export default function Dashboard() {
     return <div>No sensor data available.</div>;
   }
 
-  console.table(predictionData?.details.last_input);
-  console.log(predictionData?.details.final_prediction);
+  console.log(predictionData);
 
   const probab = Number(
     Number(
@@ -66,6 +65,7 @@ export default function Dashboard() {
         : "nan"
     ).toFixed(2)
   );
+  console.log(probab);
   return (
     <div>
       <div className="flex items-center justify-between p-5 pb-3">
@@ -116,44 +116,34 @@ export default function Dashboard() {
                 <CardTitle>Cloudburst Warning</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col text-center items-center justify-center grow">
-                {probab == null ? (
+                {isNaN(probab) ? (
                   <>
                     <div className="text-2xl font-bold text-green-600">
-                      Skiris is Thinking
+                      Skyris is Thinking
                     </div>
                     <p>More Data is Required to make predictions!</p>
                   </>
+                ) : probab < 50 ? (
+                  <>
+                    <div className="text-2xl font-bold text-green-600">
+                      Low Risk of Cloudburst
+                    </div>
+                    <p>Conditions are stable!</p>
+                  </>
+                ) : probab >= 75 ? (
+                  <>
+                    <div className="text-2xl font-bold text-red-600">
+                      High Risk of Cloudburst
+                    </div>
+                    <p>Take immediate precautions!</p>
+                  </>
                 ) : (
-                  // : probab < 50 ? (
-                  //   <>
-                  //     <div className="text-2xl font-bold text-green-600">
-                  //       Low Risk of Cloudburst
-                  //     </div>
-                  //     <p>Conditions are stable!</p>
-                  //   </>
-                  // ) : probab >= 75 ? (
-                  //   <>
-                  //     <div className="text-2xl font-bold text-red-600">
-                  //       High Risk of Cloudburst
-                  //     </div>
-                  //     <p>Take immediate precautions!</p>
-                  //   </>
-                  // ) : (
-                  //   <>
-                  //     <div className="text-2xl font-bold text-orange-600">
-                  //       Medium Risk of Cloudburst
-                  //     </div>
-                  //     <p>Stay alert and monitor conditions.</p>
-                  //   </>
-                  // )}
-                  predictionData?.details.final_prediction === 1 && (
-                    <>
-                      <div className="text-2xl font-bold text-red-600">
-                        High Risk of Cloudburst
-                      </div>
-                      <p>Take immediate precautions!</p>
-                    </>
-                  )
+                  <>
+                    <div className="text-2xl font-bold text-orange-600">
+                      Medium Risk of Cloudburst
+                    </div>
+                    <p>Stay alert and monitor conditions.</p>
+                  </>
                 )}
               </CardContent>
             </Card>
