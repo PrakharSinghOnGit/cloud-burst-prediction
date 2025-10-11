@@ -12,7 +12,7 @@ time.sleep(2)
 arduino.flushInput()
 
 # --- API Endpoint ---
-url = os.getenv("BACKEND_URL")
+url = "http://34.131.101.8:8000/data"
 
 # --- Headers (fixed order) ---
 header = ["cloud_top", "distance", "light", "rain", "humidity", "temperature", "pressure"]
