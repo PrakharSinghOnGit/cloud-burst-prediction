@@ -476,7 +476,7 @@ NEXT_PUBLIC_OPENWEATHER_API_KEY=your_openweathermap_api_key_here
 # ──────────────────────────────────────────────
 # The FastAPI ML server URL where predictions are fetched from.
 # Update this if your ML server runs on a different host/port.
-# For local development: http://localhost:8000
+BACKEND_URL=http://<ip-address-from-uvicorn>:8000/data
 ```
 
 ### Supabase Setup
