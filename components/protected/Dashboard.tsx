@@ -52,8 +52,8 @@ export default function Dashboard() {
     Number(
       predictionData?.details.final_prediction_prob
         ? predictionData.details.final_prediction_prob * 100
-        : "nan"
-    ).toFixed(2)
+        : "nan",
+    ).toFixed(2),
   );
   console.log(probab);
   return (
