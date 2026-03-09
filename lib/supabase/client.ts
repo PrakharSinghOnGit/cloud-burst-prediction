@@ -6,13 +6,9 @@ export function createClient() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true,
-        storage:
-          typeof window !== "undefined" ? window.localStorage : undefined,
-        storageKey: "sb-auth-token",
         flowType: "pkce",
+        detectSessionInUrl: true,
+        persistSession: true,
       },
     }
   );

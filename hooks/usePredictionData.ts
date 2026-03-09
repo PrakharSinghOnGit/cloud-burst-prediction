@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-const UPDATE_INTERVAL = 5000; // 5 seconds - you can edit this value
+const UPDATE_INTERVAL = 1000; // 5 seconds - you can edit this value
 
 export interface PredictionData {
   status: string;

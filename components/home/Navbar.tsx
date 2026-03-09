@@ -44,10 +44,14 @@ const Navbar = () => {
           id="action"
           className="items-center justify-center gap-2 hidden md:flex"
         >
-          <Button variant={"outline"}>Log in</Button>
-          <Button>
-            Sign Up
-            <LogIn />
+          <Button asChild variant={"outline"}>
+            <Link href="/protected">Log in</Link>
+          </Button>
+          <Button asChild>
+            <Link href="/protected" className="flex items-center gap-2">
+              Sign Up
+              <LogIn />
+            </Link>
           </Button>
         </div>
 
@@ -83,14 +87,16 @@ const Navbar = () => {
           ))}
 
           <div className="border-t pt-2 mt-2">
-            <Button variant={"ghost"} className="justify-start w-full">
-              Log in
+            <Button asChild variant={"ghost"} className="justify-start w-full">
+              <Link href="/protected">Log in</Link>
             </Button>
-            <Button variant={"ghost"} className="justify-start w-full">
-              <span className="flex items-center gap-2">
-                Sign Up
-                <LogIn />
-              </span>
+            <Button asChild variant={"ghost"} className="justify-start w-full">
+              <Link href="/protected" className="flex items-center gap-2">
+                <span className="flex items-center gap-2">
+                  Sign Up
+                  <LogIn />
+                </span>
+              </Link>
             </Button>
           </div>
         </div>

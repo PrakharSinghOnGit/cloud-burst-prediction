@@ -1,4 +1,3 @@
-import { useProfile } from "@/hooks/useDatabase";
 import { usePredictionDataContext } from "@/contexts/PredictionDataContext";
 import DashboardSkeleton from "./ui/DashboardSkeleton";
 import { AnimatedGroup } from "@/components/ui/animated-group";
@@ -19,11 +18,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
 export default function Dashboard() {
   const {
-    data: profile,
-    isLoading: profileLoading,
-    error: profileError,
-  } = useProfile();
-  const {
     data: predictionData,
     loading: predictionLoading,
     error: predictionError,
@@ -31,11 +25,7 @@ export default function Dashboard() {
     refresh,
   } = usePredictionDataContext();
 
-  if (profileLoading || predictionLoading) return <DashboardSkeleton />;
-  if (profile?.length == 0 || !profile)
-    return <div>You don&apos;t have a profile yet.</div>;
-  if (profileError)
-    return <div>Error loading profile: {profileError.message}</div>;
+  if (predictionLoading) return <DashboardSkeleton />;
 
   // Remove the unused function since we'll use getSensorHistory directly
 
@@ -69,7 +59,7 @@ export default function Dashboard() {
   return (
     <div>
       <div className="flex items-center justify-between p-5 pb-3">
-        <h2 className="font-bold text-2xl">Welcome, {profile[0].name}</h2>
+        <h2 className="font-bold text-2xl">Dashboard</h2>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
             <div

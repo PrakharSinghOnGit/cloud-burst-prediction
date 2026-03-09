@@ -6,7 +6,6 @@ import { Cloud, Zap, Shield, CloudRainWind, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/components/providers/AuthProvider";
 import { ModeToggle } from "../ThemeChange";
 
 export const Hero = () => {
@@ -149,31 +148,8 @@ const menuItems = [
 ];
 
 const HeroButtons = () => {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <button
-        disabled
-        className="px-8 py-4 bg-gradient-to-r from-blue-500 to-teal-500 text-white font-semibold rounded-full opacity-50 shadow-lg"
-      >
-        Loading...
-      </button>
-    );
-  }
-
-  if (user) {
-    return (
-      <Link href="/protected">
-        <button className="px-8 py-4 bg-gradient-to-r from-blue-500 to-teal-500 text-white font-semibold rounded-full hover:from-blue-600 hover:to-teal-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
-          Go to Dashboard
-        </button>
-      </Link>
-    );
-  }
-
   return (
-    <Link href="/auth/signup">
+    <Link href="/protected">
       <button className="px-8 py-4 bg-gradient-to-r from-blue-500 to-teal-500 text-white font-semibold rounded-full hover:from-blue-600 hover:to-teal-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
         Get Early Access
       </button>
@@ -184,7 +160,6 @@ const HeroButtons = () => {
 const HeroHeader = () => {
   const [menuState, setMenuState] = React.useState(false);
   const [isScrolled, setIsScrolled] = React.useState(false);
-  const { user, loading } = useAuth();
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -204,7 +179,7 @@ const HeroHeader = () => {
           className={cn(
             "mx-auto mt-2 max-w-6xl px-6 transition-all duration-300 lg:px-12",
             isScrolled &&
-              "bg-background/50 max-w-4xl rounded-2xl border backdrop-blur-lg lg:px-5"
+              "bg-background/50 max-w-4xl rounded-2xl border backdrop-blur-lg lg:px-5",
           )}
         >
           <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
@@ -260,54 +235,34 @@ const HeroHeader = () => {
               </div>
               <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
                 <ModeToggle />
-                {loading ? (
-                  <Button variant="outline" size="sm" disabled>
-                    <span>Loading...</span>
-                  </Button>
-                ) : user ? (
-                  <>
-                    <Button
-                      asChild
-                      size="sm"
-                      className="bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600"
-                    >
-                      <Link href="/protected">
-                        <span>Get Started</span>
-                      </Link>
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button
-                      asChild
-                      variant="outline"
-                      size="sm"
-                      className={cn(isScrolled && "lg:hidden")}
-                    >
-                      <Link href="/auth/login">
-                        <span>Login</span>
-                      </Link>
-                    </Button>
-                    <Button
-                      asChild
-                      size="sm"
-                      className={cn(isScrolled && "lg:hidden")}
-                    >
-                      <Link href="/auth/signup">
-                        <span>Sign Up</span>
-                      </Link>
-                    </Button>
-                    <Button
-                      asChild
-                      size="sm"
-                      className={cn(isScrolled ? "lg:inline-flex" : "hidden")}
-                    >
-                      <Link href="/auth/signup">
-                        <span>Get Started</span>
-                      </Link>
-                    </Button>
-                  </>
-                )}
+                <Button
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className={cn(isScrolled && "lg:hidden")}
+                >
+                  <Link href="/protected">
+                    <span>Login</span>
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  size="sm"
+                  className={cn(isScrolled && "lg:hidden")}
+                >
+                  <Link href="/protected">
+                    <span>Sign Up</span>
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  size="sm"
+                  className={cn(isScrolled ? "lg:inline-flex" : "hidden")}
+                >
+                  <Link href="/protected">
+                    <span>Get Started</span>
+                  </Link>
+                </Button>
               </div>
             </div>
           </div>

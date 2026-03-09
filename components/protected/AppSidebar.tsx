@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/sidebar";
 import { useNavigation } from "@/components/providers/NavigationContext";
 import { LogOut } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -58,9 +57,7 @@ export function AppSidebar() {
   const router = useRouter();
 
   const logout = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push("/auth/login");
+    router.push("/");
   };
   const { currentPage, setCurrentPage } = useNavigation();
   const { isMobile: isSidebarMobile, state } = useSidebar();

@@ -1,17 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { hasEnvVars } from "../utils";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
   });
-
-  // If the env vars are not set, skip middleware check. You can remove this
-  // once you setup the project.
-  if (!hasEnvVars) {
-    return supabaseResponse;
-  }
 
   // Skip auth checks for public routes and static assets
   const publicPaths = [
@@ -57,20 +50,44 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // Only check auth for protected routes
+  // Check authentication for protected routes
   if (request.nextUrl.pathname.startsWith("/protected")) {
     try {
-      const { data } = await supabase.auth.getClaims();
-      const user = data?.claims;
+      // // Debug: Log all cookies being passed
+      // const allCookies = request.cookies.getAll();
+      // console.log("Middleware cookies:", allCookies);
 
-      if (!user) {
-        // no user, redirect to login page
+      // Get session using Supabase client
+      const {
+        data: { session },
+        // error,
+      } = await supabase.auth.getSession();
+      // console.log("Session check result:", {
+      //   hasSession: !!session,
+      //   error: error?.message,
+      //   sessionExpiresAt: session?.expires_at,
+      // });
+
+      if (!session) {
+        // No valid session found
+        console.log("No valid session, redirecting to login");
+        const redirectTo = request.nextUrl.pathname;
         const url = request.nextUrl.clone();
         url.pathname = "/auth/login";
-        return NextResponse.redirect(url);
+        url.searchParams.set("redirectTo", redirectTo);
+
+        // Create response with proper cookie handling
+        const response = NextResponse.redirect(url);
+
+        // Copy over any existing cookies to maintain state
+        supabaseResponse.cookies.getAll().forEach((cookie) => {
+          response.cookies.set(cookie.name, cookie.value);
+        });
+
+        return response;
       }
-    } catch {
-      // If auth check fails, redirect to login
+    } catch (err) {
+      console.error("Auth check error:", err);
       const url = request.nextUrl.clone();
       url.pathname = "/auth/login";
       return NextResponse.redirect(url);

@@ -3,15 +3,12 @@
 import { SidebarMenuButton } from "@/components/ui/sidebar";
 import { useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
-import { useAuth } from "@/components/providers/AuthProvider";
 
 export function SidebarLogoutButton() {
   const router = useRouter();
-  const { signOut } = useAuth();
 
   const logout = async () => {
-    await signOut();
-    router.push("/auth/login");
+    router.push("/");
   };
 
   return (

@@ -1,21 +1,23 @@
 "use client";
 
-import { useSupabase } from "@/components/providers/SupabaseProvider";
-import { createClient } from "@/lib/supabase/client";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import type { Database } from "@/util/database.types";
 
 type Tables = Database["public"]["Tables"];
 
 export const useProfile = (options?: { enabled?: boolean }) => {
-  const supabase = useSupabase();
-
   return useQuery({
     queryKey: ["users"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("users").select();
-      if (error) throw error;
-      return data as Tables["users"]["Row"][];
+      return [
+        {
+          id: "local-user",
+          name: "User",
+          email: null,
+          phone: null,
+          created_at: new Date().toISOString(),
+        },
+      ] as Tables["users"]["Row"][];
     },
     enabled: options?.enabled ?? true,
     staleTime: 60 * 1000,
@@ -24,14 +26,9 @@ export const useProfile = (options?: { enabled?: boolean }) => {
 
 // Simple mutation hook for updating user profile (for sign-up form)
 export const useUpdateUserProfile = () => {
-  const supabase = createClient();
   return useMutation({
-    mutationFn: async ({ name, phone }: { name: string; phone: string }) => {
-      const { error } = await supabase
-        .from("users")
-        .update({ name: name, phone: phone });
-
-      if (error) throw error;
+    mutationFn: async () => {
+      return;
     },
   });
 };
